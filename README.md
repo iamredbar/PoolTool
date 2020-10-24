@@ -14,7 +14,7 @@ Tested on MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS. No Windows so
 
 ```cd PoolTool```
 
-```pip3 install -r requirements.txt```
+```sudo pip3 install -r requirements.txt```
 
 ## Set up
 
