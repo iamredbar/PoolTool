@@ -50,4 +50,4 @@ If it is successful, you will get another pop-up window with the `amount paid`, 
 
 ![PoolTool Screenshot](https://i.ibb.co/0FW3ddD/Screen-Shot-2020-10-23-at-9-40-42-PM.png)
 
-### Please report any issues you have in Github. 
+### Please report any issues you have via Github. 
