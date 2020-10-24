@@ -1,5 +1,5 @@
 # PoolTool
-A simple tool to help anyone use Liquidity Pools on the BitShares blockchain.
+A simple GUI tool to help anyone use Liquidity Pools on the BitShares blockchain.
 
 Written entirely in Python, it will work on any platform that can run Python.
 
