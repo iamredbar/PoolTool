@@ -3,6 +3,8 @@ A simple GUI tool to help anyone use Liquidity Pools on the BitShares blockchain
 
 Written entirely in Python, it will work on any platform that can run Python.
 
+Telegram Group: https://t.me/pooltool_community_edition
+
 ## Installation
 Requires Python 3.8+
 
