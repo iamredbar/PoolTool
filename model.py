@@ -12,7 +12,7 @@ from bitshares.price import Price
 class Model:
     def __init__(self):
         self.get_settings()
-        self.bitshares = BitShares(node='wss://btsfullnode.bangzi.info/ws')
+        self.bitshares = BitShares()
         self.invert = False
         self.pool_id_or_sym = None
 
@@ -92,7 +92,7 @@ class Model:
         trade_message = ''
         new_data = {}
         try:
-            bitshares = BitShares(node='wss://btsfullnode.bangzi.info/ws', nobroadcast=False, keys=data['key'], blocking='head')
+            bitshares = BitShares(nobroadcast=False, keys=data['key'], blocking='head')
             if data['market_or_pool'] == 'pool':
                 new_data['operation_type'] = 'Pool Operation'
                 if data['buy_or_sell'] == 'buy':

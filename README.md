@@ -18,7 +18,7 @@ Tested on MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS. No Windows so
 
 ## Set up
 
-You will need to set a default node using `Uptick`. Syntax is like this:
+You will need to set a default node using `uptick`. Syntax is like this:
 
 ```uptick set node <node_goes_here>```
 
@@ -26,7 +26,9 @@ Example:
 
 ```uptick set node 'wss://btsfullnode.bangzi.info/ws'```
 
-If this step is not done, it is very unlikely that it will work.
+**If this step is not done, it is very unlikely that it will work.**
+
+(read more about `uptick` here: http://docs.uptick.rocks/en/latest/)
 
 ## Start Up
 

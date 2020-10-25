@@ -1,2 +1,4 @@
 
 .DS_Store
+__pycache__/model.cpython-38.pyc
+__pycache__/view.cpython-38.pyc
