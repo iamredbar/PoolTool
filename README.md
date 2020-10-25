@@ -38,18 +38,22 @@ Example:
 
 Upon start up, you will need to select the pool you would like to use via the dropdown menu.
 
-![PoolTool Screenshot](https://i.ibb.co/6Z2gSZq/Screen-Shot-2020-10-23-at-9-38-55-PM.png)
+![PoolTool Screenshot](https://i.ibb.co/nw6bz6H/Screen-Shot-2020-10-25-at-9-30-10-AM.png)
 
 At that time, you will need to select whether you would like to buy or sell, choose the asset, and enter the amount. Click `Update Price`. This will give you an amount that it will cost or amount you will receive, depending on your choices. Clicking `Take Offer` will display a pop-up asking for confirmation of the exchange.
 
-![PoolTool Screenshot](https://i.ibb.co/25drNXh/Screen-Shot-2020-10-23-at-9-39-31-PM.png)
+![PoolTool Screenshot](https://i.ibb.co/b68n3TN/Screen-Shot-2020-10-25-at-9-30-40-AM.png)
+
+![PoolTool Screenshot](https://i.ibb.co/fkFxRFB/Screen-Shot-2020-10-25-at-9-30-53-AM.png)
 
 Enter your account name, and your active key. This will then broadcast the transaction.
 
-![PoolTool Screenshot](https://i.ibb.co/BqXb1n7/Screen-Shot-2020-10-23-at-9-40-00-PM.png)
+![PoolTool Screenshot](https://i.ibb.co/jyyGhdD/Screen-Shot-2020-10-25-at-9-31-11-AM.png)
+
+![PoolTool Screenshot](https://i.ibb.co/H29tbYd/Screen-Shot-2020-10-25-at-9-31-32-AM.png)
 
 If it is successful, you will get another pop-up window with the `amount paid`, `amount expected`, and `amount received`.
 
-![PoolTool Screenshot](https://i.ibb.co/0FW3ddD/Screen-Shot-2020-10-23-at-9-40-42-PM.png)
+![PoolTool Screenshot](https://i.ibb.co/9Yj3kCb/Screen-Shot-2020-10-25-at-9-31-58-AM.png)
 
 ### Please report any issues you have via Github. 
