@@ -1,6 +1,6 @@
 from view import View
 from model import Model
-from tkinter import *
+import tkinter as tk
 from pubsub import pub
 
 class Controller:
@@ -15,7 +15,6 @@ class Controller:
         pub.subscribe(self.update_prices, 'update_prices')
         pub.subscribe(self.take_offer, 'take_offer')
         pub.subscribe(self.quit_program_requested, 'quit_program_requested')
-        #pub.subscribe(self.asset_of_interest_change, 'asset_of_interest_change')
 
         pub.subscribe(self.update_gui, 'update_gui')
         pub.subscribe(self.update_trading_prices, 'update_trading_prices')
@@ -27,8 +26,6 @@ class Controller:
     def update_trading_prices(self, data):
         self.view.update_trading_prices(data)
 
-    # def unlock_wallet(self, password):
-    #     self.model.unlock_wallet(password)
 
     def update_gui(self, data):
         self.view.update_gui(data)
@@ -39,8 +36,6 @@ class Controller:
     def pool_change_requested(self, data):
         self.model.pool_change(data)
 
-    # def asset_of_interest_change(self, data):
-    #     self.model.asset_of_interest_change(data)
 
     def take_offer(self, data):
         self.model.take_offer(data)
@@ -49,7 +44,7 @@ class Controller:
         self.model.quit_program()
 
 if __name__ == '__main__':
-    window = Tk()
+    window = tk.Tk()
     window.title('PoolTool')
     window.resizable(False, False)
     window.columnconfigure([1,2], weight=1)
