@@ -1,5 +1,5 @@
 # PoolTool
-A simple tool to help anyone use Liquidity Pools on the BitShares blockchain.
+A simple GUI tool to help anyone use Liquidity Pools on the BitShares blockchain.
 
 Written entirely in Python, it will work on any platform that can run Python.
 
@@ -10,7 +10,11 @@ Tested on MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS. No Windows so
 
 ```sudo apt-get install libffi-dev libssl-dev python3-dev python3-tk```
 
-```pip3 install -r requirements.txt```
+```git clone https://github.com/iamredbar/PoolTool.git```
+
+```cd PoolTool```
+
+```sudo pip3 install -r requirements.txt```
 
 ## Set up
 
@@ -46,4 +50,4 @@ If it is successful, you will get another pop-up window with the `amount paid`, 
 
 ![PoolTool Screenshot](https://i.ibb.co/0FW3ddD/Screen-Shot-2020-10-23-at-9-40-42-PM.png)
 
-### Please report any issues you have in Github. 
+### Please report any issues you have via Github. 
