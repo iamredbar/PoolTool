@@ -192,13 +192,6 @@ class View:
                         data=self.cmb_pool_id['values'][self.cmb_pool_id.current()]
         )
 
-    # def change_asset(self, event):
-    #     print(event.widget.curselection())
-    #     print(self.cmb_pool_id.current())
-    #     sel_tuple = event.widget.curselection()
-    #     sel = 0 if (len(sel_tuple) and sel_tuple[0] == 0) else 1
-    #     pub.sendMessage('asset_of_interest_change', data=sel)
-
     def take_offer(self):
         data = {
             'market_or_pool': 'pool',

@@ -8,7 +8,6 @@ from bitshares.amount import Amount
 from bitshares.asset import Asset
 from bitshares.market import Market
 from bitshares.price import Price
-#from pool import Pool
 
 class Model:
     def __init__(self):
@@ -33,11 +32,6 @@ class Model:
         else:
             selected_asset = data['assets'][1]
             unselected_asset = data['assets'][0]
-        # market = Market('{}:{}'.format(selected_asset, unselected_asset))
-        # market_cost_track = {
-        #     'total': 0,
-        #     'cost': 0
-        # }
         pool_cost_track = {'invariant': data['invariant']}
         if data['buy_or_sell'] == 'buy':
             if selected_asset == data['assets'][0]:
@@ -92,7 +86,6 @@ class Model:
         return float(round(difference, precision))
 
     def pool_change(self, data):
-        #self.pool_id_or_sym = data
         self.get_blockchain_info(data)
 
     def take_offer(self, data):
@@ -131,10 +124,6 @@ class Model:
         pub.sendMessage('print_transaction', data=new_data)
 
     def get_blockchain_info(self, asset):
-        #bitshares = BitShares(node='wss://blockzms.xyz/ws')
-        #print('set bitshares before sending to pool.py')
-        #data = {'pool': Pool(self.pool_id_or_sym, invert=self.invert, bitshares=bitshares)}
-        #print('finished pool.py')
         data = {'pool': asset}
         data['pool_object'] = self.bitshares.rpc.get_object(asset)
         data['pool_name'] = Asset(data['pool_object']['share_asset']).symbol
