@@ -3,6 +3,8 @@ A simple GUI tool to help anyone use Liquidity Pools on the BitShares blockchain
 
 Written entirely in Python, it will work on any platform that can run Python.
 
+Telegram Group: https://t.me/pooltool_community_edition
+
 ## Installation
 Requires Python 3.8+
 
@@ -14,7 +16,7 @@ Tested on MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS. No Windows so
 
 ```cd PoolTool```
 
-```sudo pip3 install -r requirements.txt```
+```pip3 install -r requirements.txt```
 
 ## Set up
 
@@ -52,7 +54,7 @@ Enter your account name, and your active key. This will then broadcast the trans
 
 ![PoolTool Screenshot](https://i.ibb.co/H29tbYd/Screen-Shot-2020-10-25-at-9-31-32-AM.png)
 
-If it is successful, you will get another pop-up window with the `amount paid`, `amount expected`, and `amount received`.
+If it is successful, you will get another pop-up window with the `amount paid`, `amount anticipated`, and `amount received`.
 
 ![PoolTool Screenshot](https://i.ibb.co/9Yj3kCb/Screen-Shot-2020-10-25-at-9-31-58-AM.png)
 
