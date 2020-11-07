@@ -1,5 +1,5 @@
 uptick==0.2.6
 bitshares==0.7.0
-graphenelib
+graphenelib>=1.4.0
 PyYAML
 pypubsub

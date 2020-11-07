@@ -88,6 +88,31 @@ class Model:
     def pool_change(self, data):
         self.get_blockchain_info(data)
 
+    def deposit_lp(self, data):
+        trade_message = ''
+        new_data = {}
+        try:
+            bitshares = BitShares(nobroadcast=False, keys=data['key'], blocking='head')
+            trade_message = bitshares.deposit_into_liquidity_pool(
+                pool=data['poolshare_symbol'],
+                amount_a=Amount(
+                    data['asset_x_amount'],
+                    data['asset_x_symbol'],
+                ),
+                amount_b=Amount(
+                    data['asset_y_amount'],
+                    data['asset_y_symbol'],
+                ),
+                account=data['account'],
+            )
+            new_data['operation_results'] = trade_message['operation_results']
+        except Exception as err:
+            print(err)
+        new_data['paid_x'] = Amount(new_data['operation_results'][0][1]['paid'][0])
+        new_data['paid_y'] = Amount(new_data['operation_results'][0][1]['paid'][1])
+        new_data['received'] = Amount(new_data['operation_results'][0][1]['received'][0])
+        pub.sendMessage('print_deposit', data=new_data)
+
     def take_offer(self, data):
         trade_message = ''
         new_data = {}
