@@ -21,6 +21,10 @@ class Controller:
         pub.subscribe(self.update_trading_prices, 'update_trading_prices')
         pub.subscribe(self.print_transaction, 'print_transaction')
         pub.subscribe(self.print_deposit, 'print_deposit')
+        pub.subscribe(self.invalid_pool, 'invalid_pool')
+
+    def invalid_pool(self):
+        self.view.invalid_pool()
 
     def print_deposit(self, data):
         self.view.print_deposit(data)
@@ -42,7 +46,6 @@ class Controller:
 
     def pool_change_requested(self, data):
         self.model.pool_change(data)
-
 
     def take_offer(self, data):
         self.model.take_offer(data)

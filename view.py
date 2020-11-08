@@ -265,7 +265,6 @@ class View:
         self.btn_deposit['state'] = 'enabled'
 
         self.loading_pop_up.destroy()
-        self.window.deiconify()
         self.window.update()
 
     def create_menu(self):
@@ -278,7 +277,6 @@ class View:
 
     def change_pool(self, event):
         self.loading_popup()
-        self.window.withdraw()
         pub.sendMessage('pool_change_requested',
                         data=self.cmb_pool_id['values'][self.cmb_pool_id.current()]
         )
@@ -309,7 +307,6 @@ class View:
             data['account'] = simpledialog.askstring('Account Name', 'Enter your account:', parent=self.window)
             data['key'] = simpledialog.askstring('Active Key', 'Enter your active key:', show='*', parent=self.window)
             self.deposit_popup()
-            self.window.withdraw()
             pub.sendMessage('deposit_lp', data=data)
 
     def take_offer(self):
@@ -355,7 +352,6 @@ class View:
     def print_deposit(self, data):
         if len(data) != 0:
             self.deposit_pop_up.destroy()
-            self.window.deiconify()
             self.window.update()
             messagebox.showinfo(
                 'Deposit Data',
@@ -405,6 +401,15 @@ class View:
         data['invariant'] = float(self.string_var['sv_lbl_pool_invariant'].get()[18:])
         data['selected_asset'] = self.ls_assets.curselection()[0]
         pub.sendMessage('update_prices', data=data)
+
+    def invalid_pool(self):
+        self.loading_pop_up.destroy()
+        self.window.update()
+        messagebox.showinfo(
+                'Error',
+                'Invalid pool selection. Please try a different pool.',
+                parent=self.window,
+            )
 
     def update_trading_prices(self, data):
         self.string_var['lbl_helper_pool_price'].set(data['pool'])

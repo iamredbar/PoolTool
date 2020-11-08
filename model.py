@@ -149,28 +149,32 @@ class Model:
         pub.sendMessage('print_transaction', data=new_data)
 
     def get_blockchain_info(self, asset):
-        data = {'pool': asset}
-        data['pool_object'] = self.bitshares.rpc.get_object(asset)
-        data['pool_name'] = Asset(data['pool_object']['share_asset']).symbol
-        data['asset_x'] = Asset(data['pool_object']['asset_a'])
-        data['asset_y'] = Asset(data['pool_object']['asset_b'])
-        data['amount_x'] = Amount(int(data['pool_object']['balance_a'])/10**data['asset_x'].precision, data['asset_x'])
-        data['amount_y'] = Amount(int(data['pool_object']['balance_b'])/10**data['asset_y'].precision, data['asset_y'])
-        self.amount_x = data['amount_x']
-        self.amount_y = data['amount_y']
-        data['market_ticker_object'] = Market(
+        try:
+            data = {'pool': asset}
+            data['pool_object'] = self.bitshares.rpc.get_object(asset)
+            data['pool_name'] = Asset(data['pool_object']['share_asset']).symbol
+            data['asset_x'] = Asset(data['pool_object']['asset_a'])
+            data['asset_y'] = Asset(data['pool_object']['asset_b'])
+            data['amount_x'] = Amount(int(data['pool_object']['balance_a'])/10**data['asset_x'].precision, data['asset_x'])
+            data['amount_y'] = Amount(int(data['pool_object']['balance_b'])/10**data['asset_y'].precision, data['asset_y'])
+            self.amount_x = data['amount_x']
+            self.amount_y = data['amount_y']
+            data['market_ticker_object'] = Market(
+                # python bitshares reverses base and quote
+                base=data['asset_y'],
+                quote=data['asset_x']
+                ).ticker()
+            data['market_orderbook'] = Market(
+                base=data['asset_y'],
+                quote=data['asset_x']
+                ).orderbook(50)
+            data['pool_invariant'] = int(data['pool_object']['virtual_value'])/(10**(data['asset_x'].precision + data['asset_y'].precision))
+
             # python bitshares reverses base and quote
-            base=data['asset_y'],
-            quote=data['asset_x']
-            ).ticker()
-        data['market_orderbook'] = Market(
-            base=data['asset_y'],
-            quote=data['asset_x']
-            ).orderbook(50)
-        data['pool_invariant'] = int(data['pool_object']['virtual_value'])/(10**(data['asset_x'].precision + data['asset_y'].precision))
+            data['price_xy'] = Price(base=data['amount_y'], quote=data['amount_x'])
+            data['price_yx'] = Price(base=data['amount_x'], quote=data['amount_y'])
 
-        # python bitshares reverses base and quote
-        data['price_xy'] = Price(base=data['amount_y'], quote=data['amount_x'])
-        data['price_yx'] = Price(base=data['amount_x'], quote=data['amount_y'])
-
-        pub.sendMessage('update_gui', data=data)
+            pub.sendMessage('update_gui', data=data)
+        except Exception as err:
+            print('Invalid pool selected. Error: {}'.format(err))
+            pub.sendMessage('invalid_pool')
