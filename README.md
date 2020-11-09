@@ -59,28 +59,28 @@ Telegram群：https://t.me/pooltool_community_edition
 需求：Python 3.8+
 MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS已测试。当前尚无Windows解决方案。
 
-sudo apt-get install libffi-dev libssl-dev python3-dev python3-tk
+```sudo apt-get install libffi-dev libssl-dev python3-dev python3-tk```
 
-git clone https://github.com/iamredbar/PoolTool.git
+```git clone https://github.com/iamredbar/PoolTool.git```
 
-cd PoolTool
+```cd PoolTool```
 
-pip3 install -r requirements.txt
+```pip3 install -r requirements.txt```
 
 ## 设置
 你需要使用uptick设置一个默认的连接节点.语法如下：
-uptick set node <node_goes_here>
+```uptick set node <node_goes_here>```
 
 例子:
 
-uptick set node 'wss://btsfullnode.bangzi.info/ws'
+```uptick set node 'wss://btsfullnode.bangzi.info/ws'```
 
 **如果这一步没有完成，将不能正常运行**
 
 (更多关于 uptick : http://docs.uptick.rocks/en/latest/)
 
 ## 开始
-python3 controller.py
+```python3 controller.py```
 
 ## 基本操作
 启动后，你可以按照你的需求在面板下拉菜单上选择流动池。
