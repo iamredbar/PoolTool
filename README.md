@@ -73,7 +73,7 @@ MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS已测试。当前尚无W
 
 例子:
 
-```uptick set node 'wss://btsfullnode.bangzi.info/ws'```
+```uptick set node 'wss://api.bts.mobi/ws'```
 
 **如果这一步没有完成，将不能正常运行**
 
