@@ -13,6 +13,8 @@ Requires Python 3.8+
 
 Tested on MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS. No Windows solution currently.
 
+Linux install:
+
 ```sudo apt-get install libffi-dev libssl-dev python3-dev python3-tk```
 
 ```git clone https://github.com/iamredbar/PoolTool.git```
