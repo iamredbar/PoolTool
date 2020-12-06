@@ -1,5 +1,7 @@
-uptick==0.2.6
+uptick==0.2.5
 bitshares==0.7.0
-graphenelib>=1.4.0
+graphenelib==1.4.0
 PyYAML
 pypubsub
+matplotlib
+numpy

@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import simpledialog
 from pubsub import pub
+from depthchart import DepthChart
 
 class View:
     def __init__(self, window):
@@ -23,15 +24,17 @@ class View:
         self.frame_pool_info = tk.Frame(
             self.window,
         )
-        self.frame_exchange = tk.Frame(
+        self.frame_market_info = tk.Frame(
             self.window,
-            background='#c9c9c9',
+        )
+        self.frame_depthchart = DepthChart(
+            self.window,
+            None,
+            height=100,
         )
         self.frame_pooltool_helper = tk.Frame(
-            self.frame_exchange,
-        )
-        self.frame_pooltool_lower = tk.Frame(
-            self.frame_exchange,
+            self.window,
+            #background='#c9c9c9',
         )
         self.frame_deposit = tk.Frame(
             self.window,
@@ -63,6 +66,22 @@ class View:
         self.lbl_pool_price_ba = tk.Label(self.frame_pool_info)
         self.lbl_pool_price_ba['textvariable'] = self.string_var['sv_lbl_pool_price_ba']
         
+        # market info widgets
+        self.lbl_assets = tk.Label(self.frame_market_info)
+        self.lbl_assets['textvariable'] = self.string_var['sv_lbl_assets']
+        self.lbl_market_percentage_change = tk.Label(self.frame_market_info)
+        self.lbl_market_percentage_change['textvariable'] = self.string_var['sv_lbl_market_percentage_change']
+        self.lbl_latest_price = tk.Label(self.frame_market_info)
+        self.lbl_latest_price['textvariable'] = self.string_var['sv_lbl_latest_price']
+        self.lbl_highest_bid = tk.Label(self.frame_market_info, bg=self.palette('green'))
+        self.lbl_highest_bid['textvariable'] = self.string_var['sv_lbl_highest_bid']
+        self.lbl_lowest_ask = tk.Label(self.frame_market_info, bg=self.palette('red'))
+        self.lbl_lowest_ask['textvariable'] = self.string_var['sv_lbl_lowest_ask']
+        self.lbl_market_base_volume = tk.Label(self.frame_market_info)
+        self.lbl_market_base_volume['textvariable'] = self.string_var['sv_lbl_market_base_volume']
+        self.lbl_market_quote_volume = tk.Label(self.frame_market_info)
+        self.lbl_market_quote_volume['textvariable'] = self.string_var['sv_lbl_market_quote_volume']
+
         # pooltool helper widgets
         self.rd_buy = ttk.Radiobutton(
             self.frame_pooltool_helper,
@@ -86,7 +105,6 @@ class View:
             self.frame_pooltool_helper,
             width=10,
             state='disabled',
-            justify='center',
         )
         self.ls_assets = tk.Listbox(
             self.frame_pooltool_helper,
@@ -95,22 +113,37 @@ class View:
             width=10,
             state='disabled',
         )
-        self.lbl_pool_price_only = tk.Label(
-            self.frame_pooltool_lower,
-            text='Pool Price:'
+        self.ls_assets.bind('<<ListboxSelect>>',self.change_asset)
+        self.rd_use_market = ttk.Radiobutton(
+            self.frame_pooltool_helper,
+            text='Use Market =',
+            variable=self.string_var['rd_market_or_pool'],
+            value='market',
+            state='disabled'
+        )
+        self.rd_use_pool = ttk.Radiobutton(
+            self.frame_pooltool_helper,
+            text='Use Pool =',
+            variable=self.string_var['rd_market_or_pool'],
+            value='pool',
+            state='disabled',
+        )
+        self.lbl_helper_market_price = tk.Label(
+            self.frame_pooltool_helper,
+            textvariable=self.string_var['lbl_helper_market_price']
         )
         self.lbl_helper_pool_price = tk.Label(
-            self.frame_pooltool_lower,
-            textvariable=self.string_var['lbl_helper_pool_price'],
+            self.frame_pooltool_helper,
+            textvariable=self.string_var['lbl_helper_pool_price']
         )
         self.btn_update_trade_prices = ttk.Button(
-            self.frame_pooltool_lower,
-            text='Update Price',
+            self.frame_pooltool_helper,
+            text='Update Prices',
             command=self.update_prices,
             state='disabled',
         )
         self.btn_take_offer = ttk.Button(
-            self.frame_pooltool_lower,
+            self.frame_pooltool_helper,
             text='Take Offer',
             command=self.take_offer,
             state='disabled',
@@ -158,13 +191,21 @@ class View:
             textvariable=self.string_var['lbl_poolshare_symbol']
         )
 
+    def create_menu(self):
+        menubar = tk.Menu(self.window)
+        menu_file = tk.Menu(menubar, tearoff=0)
+        menu_file.add_command(label='Quit', command=self.quit_program)
+        menubar.add_cascade(label='File', menu=menu_file)
+        self.window.config(menu=menubar)
+        self.window.config
+
     def setup_layout(self):
         # frames
-        self.frame_pool_info.grid(row=0, column=0, padx=5, pady=5, sticky='nw')
-        self.frame_exchange.grid(row=1, column=0, padx=5, pady=5)
-        self.frame_pooltool_helper.grid(row=0, column=0, padx=5, pady=5)
-        self.frame_pooltool_lower.grid(row=1, column=0, padx=5, pady=5)
-        self.frame_deposit.grid(row=2, column=0, padx=5, pady=5)
+        self.frame_pool_info.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky='nw')
+        self.frame_market_info.grid(row=0, column=2, columnspan=2, padx=5, pady=5, sticky='ne')
+        self.frame_depthchart.grid(row=1, column=0, columnspan=4, padx=5, pady=5, stick='ew')
+        self.frame_pooltool_helper.grid(row=2, column=1, columnspan=2, padx=5, pady=5)
+        self.frame_deposit.grid(row=3, column=1, columnspan=2, padx=5, pady=5)
         self.frame_deposit_upper.grid(row=0, column=0, padx=5, pady=5)
         self.frame_deposit_lower.grid(row=1, column=0, padx=5, pady=5)
        
@@ -177,16 +218,26 @@ class View:
         self.lbl_pool_price_ab.grid(row=5, column=0, padx=5, sticky='w')
         self.lbl_pool_price_ba.grid(row=6, column=0, padx=5, sticky='w')
 
+        # market info
+        self.lbl_assets.grid(row=0, column=0, padx=5, sticky='e')
+        self.lbl_latest_price.grid(row=3, column=0, padx=5, sticky='e')
+        self.lbl_highest_bid.grid(row=4, column=0, padx=5, sticky='ew')
+        self.lbl_lowest_ask.grid(row=5, column=0, padx=5, sticky='ew')
+        self.lbl_market_base_volume.grid(row=6, column=0, padx=5, sticky='e')
+        self.lbl_market_quote_volume.grid(row=7, column=0, padx=5, sticky='e')
+
         # pooltool helper
         self.rd_buy.grid(row=0, column=0, padx=5)
         self.rd_sell.grid(row=1, column=0, padx=5)
-        self.ls_assets.grid(row=0, rowspan=2, column=1, padx=5)
-        self.lbl_trade_amount.grid(row=0, column=2, padx=5)
-        self.ent_trade_amount.grid(row=1, column=2, padx=5)
-        self.lbl_pool_price_only.grid(row=0, column=0, padx=5, pady=5)
-        self.lbl_helper_pool_price.grid(row=1, column=0, padx=5, sticky='ew')
-        self.btn_update_trade_prices.grid(row=0, column=1, padx=5)
-        self.btn_take_offer.grid(row=1, column=1, padx=5, sticky='ew')
+        self.lbl_trade_amount.grid(row=0, column=1, padx=5)
+        self.ent_trade_amount.grid(row=1, column=1, padx=5)
+        self.ls_assets.grid(row=0, rowspan=2, column=2, padx=5)
+        self.rd_use_market.grid(row=0, column=3, padx=5, sticky='ew')
+        self.rd_use_pool.grid(row=1, column=3, padx=5, sticky='ew')
+        self.lbl_helper_market_price.grid(row=0, column=4, padx=5, sticky='ew')
+        self.lbl_helper_pool_price.grid(row=1, column=4, padx=5, sticky='ew')
+        self.btn_update_trade_prices.grid(row=0, column=5, padx=5)
+        self.btn_take_offer.grid(row=1, column=5, padx=5, sticky='ew')
 
         # deposit section
         self.ent_assetx_amount.grid(row=0, column=0, padx=5, pady=5)
@@ -205,10 +256,18 @@ class View:
         self.string_var['sv_lbl_pool_invariant'] = tk.StringVar()
         self.string_var['sv_lbl_pool_price_ab'] = tk.StringVar()
         self.string_var['sv_lbl_pool_price_ba'] = tk.StringVar()
+        self.string_var['sv_lbl_assets'] = tk.StringVar()
+        self.string_var['sv_lbl_market_percentage_change'] = tk.StringVar()
+        self.string_var['sv_lbl_latest_price'] = tk.StringVar()
+        self.string_var['sv_lbl_highest_bid'] = tk.StringVar()
+        self.string_var['sv_lbl_lowest_ask'] = tk.StringVar()
+        self.string_var['sv_lbl_market_base_volume'] = tk.StringVar()
+        self.string_var['sv_lbl_market_quote_volume'] = tk.StringVar()
 
         self.string_var['rd_buy_sell'] = tk.StringVar()
         self.string_var['ls_assets'] = tk.StringVar()
         self.string_var['rd_market_or_pool'] = tk.StringVar()
+        self.string_var['lbl_helper_market_price'] = tk.StringVar()
         self.string_var['lbl_helper_pool_price'] = tk.StringVar()
 
         self.string_var['lbl_assetx_deposit'] = tk.StringVar()
@@ -224,11 +283,19 @@ class View:
         self.string_var['sv_lbl_pool_invariant'].set('Invariant (k=xy):')
         self.string_var['sv_lbl_pool_price_ab'].set('X/Y Price:')
         self.string_var['sv_lbl_pool_price_ba'].set('Y/X Price:')
+        self.string_var['sv_lbl_assets'].set('(Market X/Y)')
+        self.string_var['sv_lbl_market_percentage_change'].set('(Market % Change)')
+        self.string_var['sv_lbl_latest_price'].set('Latest Price:')
+        self.string_var['sv_lbl_highest_bid'].set('Highest Bid:')
+        self.string_var['sv_lbl_lowest_ask'].set('Lowest Ask:')
+        self.string_var['sv_lbl_market_base_volume'].set('24h Base Volume:')
+        self.string_var['sv_lbl_market_quote_volume'].set('24h Quote Volume:')
 
         self.string_var['rd_buy_sell'].set('buy')
         self.string_var['ls_assets'].set(['Asset X', 'Asset Y'])
         self.string_var['rd_market_or_pool'].set('pool')
-        self.string_var['lbl_helper_pool_price'].set('0 BTS')
+        self.string_var['lbl_helper_market_price'].set('(Market Price)')
+        self.string_var['lbl_helper_pool_price'].set('(Pool Price)')
 
         self.string_var['lbl_assetx_deposit'].set('Asset X')
         self.string_var['lbl_assety_deposit'].set('Asset y')
@@ -245,9 +312,18 @@ class View:
         self.string_var['sv_lbl_pool_invariant'].set('Invariant (k=xy): {}'.format(data['pool_invariant']))
         self.string_var['sv_lbl_pool_price_ab'].set('X/Y Price: {}'.format(data['price_xy']))
         self.string_var['sv_lbl_pool_price_ba'].set('Y/X Price: {}'.format(data['price_yx']))
+        self.string_var['sv_lbl_assets'].set('{}/{}'.format(data['asset_x'].symbol, data['asset_y'].symbol))
+        self.string_var['sv_lbl_market_percentage_change'].set('{}%'.format(data['market_ticker_object']['percentChange']))
+        self.string_var['sv_lbl_latest_price'].set('Latest Price: {}'.format(data['market_ticker_object']['latest']))
+        self.string_var['sv_lbl_highest_bid'].set('Highest Bid: {}'.format(data['market_ticker_object']['highestBid']))
+        self.string_var['sv_lbl_lowest_ask'].set('Lowest Ask: {}'.format(data['market_ticker_object']['lowestAsk']))
+        self.string_var['sv_lbl_market_base_volume'].set('24hr Base Volume: {}'.format(data['market_ticker_object']['baseVolume']))
+        self.string_var['sv_lbl_market_quote_volume'].set('24hr Quote Volume: {}'.format(data['market_ticker_object']['quoteVolume']))
 
         self.string_var['ls_assets'].set([data['asset_x'].symbol, data['asset_y'].symbol])
-        self.string_var['lbl_helper_pool_price'].set('0 BTS')
+        self.string_var['lbl_helper_market_price'].set('')
+        self.string_var['lbl_helper_pool_price'].set('')
+        self.frame_depthchart.update_blockchain_data(data)
 
         self.string_var['lbl_assetx_deposit'].set(data['asset_x'].symbol)
         self.string_var['lbl_assety_deposit'].set(data['asset_y'].symbol)
@@ -257,8 +333,8 @@ class View:
         self.rd_sell['state'] = 'normal'
         self.ent_trade_amount['state'] = 'normal'
         self.ls_assets['state'] = 'normal'
+        self.rd_use_pool['state'] = 'normal'
         self.btn_update_trade_prices['state'] = 'enabled'
-        self.btn_take_offer['state'] = 'enabled'
 
         self.ent_assetx_amount['state'] = 'normal'
         self.ent_assety_amount['state'] = 'normal'
@@ -280,6 +356,11 @@ class View:
         pub.sendMessage('pool_change_requested',
                         data=self.cmb_pool_id['values'][self.cmb_pool_id.current()]
         )
+
+    def change_asset(self, event):
+        sel_tuple = event.widget.curselection()
+        sel = 0 if (len(sel_tuple) and sel_tuple[0] == 0) else 1
+        pub.sendMessage('asset_of_interest_change', data=sel)
 
     def update_shares(self):
         pass
@@ -311,7 +392,7 @@ class View:
 
     def take_offer(self):
         data = {
-            'market_or_pool': 'pool',
+            'market_or_pool': self.string_var['rd_market_or_pool'].get(),
             'buy_or_sell': self.string_var['rd_buy_sell'].get(),
             'amount_to_buy_sell': self.ent_trade_amount.get(),
             'selected_asset': self.ls_assets.get(self.ls_assets.curselection()),
@@ -337,17 +418,16 @@ class View:
             pub.sendMessage('take_offer', data=data)
 
     def print_transaction(self, data):
-        if len(data) != 0:
-            messagebox.showinfo(
-                'Trade Data',
-                '{}\nPaid: {}\nAnticipated: {}\nReceived: {}'.format(
-                    data['operation_type'],
-                    data['paid'],
-                    data['anticipated'],
-                    data['received']
-                ),
-                parent=self.window,
-            )
+        messagebox.showinfo(
+            'Trade Data',
+            '{}\nPaid: {}\nAnticipated: {}\nReceived: {}'.format(
+                data['operation_type'],
+                data['paid'],
+                data['anticipated'],
+                data['received']
+            ),
+            parent=self.window
+        )
 
     def print_deposit(self, data):
         if len(data) != 0:
@@ -401,21 +481,29 @@ class View:
         data['invariant'] = float(self.string_var['sv_lbl_pool_invariant'].get()[18:])
         data['selected_asset'] = self.ls_assets.curselection()[0]
         pub.sendMessage('update_prices', data=data)
+        self.btn_take_offer['state'] = 'enabled'
+
+    def update_trading_prices(self, data):
+        self.string_var['lbl_helper_market_price'].set(data['market'])
+        self.string_var['lbl_helper_pool_price'].set(data['pool'])
 
     def invalid_pool(self):
         self.loading_pop_up.destroy()
         self.window.update()
         messagebox.showinfo(
                 'Error',
-                'Invalid pool selection. Please try a different pool.',
+                'Invalid pool selection. Pool was likely deleted or has a zero balance somewhere. Please try a different pool.',
                 parent=self.window,
             )
-
-    def update_trading_prices(self, data):
-        self.string_var['lbl_helper_pool_price'].set(data['pool'])
 
     def quit_program(self):
         pub.sendMessage('quit_program_requested')
 
-if __name__ == '__main__':
-    pass
+    def palette(self, item):
+        color_palette = {
+            'header': '#333333',
+            'body': '#1E1E1E',
+            'green': '#69872D',
+            'red': '#DF413A'
+        }
+        return color_palette[item]
