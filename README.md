@@ -1,5 +1,9 @@
 <img width="822" alt="Screen Shot 2020-12-06 at 3 09 29 PM" src="https://user-images.githubusercontent.com/16945982/101292483-52b3aa00-37d5-11eb-91bd-d19311883fbe.png">
 
+### How-to Use video here:
+
+[![How To Use PoolTool for Liquidity Pools on the BitShares Blockchain](http://img.youtube.com/vi/1UNUVwYSjRo/0.jpg)](http://www.youtube.com/watch?v=1UNUVwYSjRo "How To Use PoolTool for Liquidity Pools on the BitShares Blockchain")
+
 # PoolTool
 
 A simple GUI tool to help anyone use Liquidity Pools on the BitShares blockchain.
