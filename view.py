@@ -43,8 +43,15 @@ class View:
         self.frame_deposit_upper = tk.Frame(
             self.frame_deposit,
         )
-        self.frame_deposit_lower = tk.Frame(
-            self.frame_deposit
+        # self.frame_deposit_lower = tk.Frame(
+        #     self.frame_deposit
+        # )
+        self.frame_withdraw = tk.Frame(
+            self.window,
+            background='#c9c9c9',
+        )
+        self.frame_withdraw_inner = tk.Frame(
+            self.frame_withdraw,
         )
 
         # pool info widgets
@@ -170,25 +177,42 @@ class View:
             self.frame_deposit_upper,
             textvariable=self.string_var['lbl_assety_deposit']
         )
-        self.btn_check_deposit = ttk.Button(
-            self.frame_deposit_upper,
-            text='Estimate Coming Soon',
-            command=self.update_shares,
-            state='disabled',
-        )
+        # self.btn_check_deposit = ttk.Button(
+        #     self.frame_deposit_upper,
+        #     text='Estimate Coming Soon',
+        #     command=self.update_shares,
+        #     state='disabled',
+        # )
         self.btn_deposit = ttk.Button(
             self.frame_deposit_upper,
             text='Deposit to LP',
             command=self.deposit_to_lp,
             state='disabled',
         )
-        self.lbl_poolshare_deposit = tk.Label(
-            self.frame_deposit_lower,
-            textvariable=self.string_var['lbl_poolshare_deposit'],
+        # self.lbl_poolshare_deposit = tk.Label(
+        #     self.frame_deposit_lower,
+        #     textvariable=self.string_var['lbl_poolshare_deposit'],
+        # )
+        # self.lbl_poolshare_symbol = tk.Label(
+        #     self.frame_deposit_lower,
+        #     textvariable=self.string_var['lbl_poolshare_symbol']
+        # )
+        # withdraw widgets
+        self.ent_poolasset_amount = tk.Entry(
+            self.frame_withdraw_inner,
+            width=10,
+            state='disabled',
+            justify='right',
         )
-        self.lbl_poolshare_symbol = tk.Label(
-            self.frame_deposit_lower,
-            textvariable=self.string_var['lbl_poolshare_symbol']
+        self.lbl_poolasset_name = tk.Label(
+            self.frame_withdraw_inner,
+            textvariable=self.string_var['sv_lbl_poolasset_name']
+        )
+        self.btn_withdraw = ttk.Button(
+            self.frame_withdraw_inner,
+            text='Withdraw from LP',
+            command=self.withdraw_from_lp,
+            state='disabled',
         )
 
     def create_menu(self):
@@ -207,7 +231,9 @@ class View:
         self.frame_pooltool_helper.grid(row=2, column=1, columnspan=2, padx=5, pady=5)
         self.frame_deposit.grid(row=3, column=1, columnspan=2, padx=5, pady=5)
         self.frame_deposit_upper.grid(row=0, column=0, padx=5, pady=5)
-        self.frame_deposit_lower.grid(row=1, column=0, padx=5, pady=5)
+        # self.frame_deposit_lower.grid(row=1, column=0, padx=5, pady=5)
+        self.frame_withdraw.grid(row=4, column=1, columnspan=2, padx=5, pady=5)
+        self.frame_withdraw_inner.grid(row=0, column=0, padx=5, pady=5)
        
         # pool info
         self.lbl_pool_id.grid(row=0, column=0, padx=5, sticky='w')
@@ -242,10 +268,15 @@ class View:
         # deposit section
         self.ent_assetx_amount.grid(row=0, column=0, padx=5, pady=5)
         self.lbl_assetx_deposit.grid(row=0, column=1, padx=5, pady=5, sticky='w')
-        self.btn_check_deposit.grid(row=0, column=2, padx=5, pady=5)
+        # self.btn_check_deposit.grid(row=0, column=2, padx=5, pady=5)
         self.ent_assety_amount.grid(row=1, column=0, padx=5, pady=5)
         self.lbl_assety_deposit.grid(row=1, column=1, padx=5, pady=5, sticky='w')
         self.btn_deposit.grid(row=1, column=2, padx=5, pady=5)
+
+        # withdraw section
+        self.ent_poolasset_amount.grid(row=0, column=0, padx=5, pady=5)
+        self.lbl_poolasset_name.grid(row=0, column=1, padx=5, pady=5)
+        self.btn_withdraw.grid(row=0, column=2, padx=5, pady=5)
 
     def get_string_var(self):
         self.string_var = {}
@@ -275,6 +306,8 @@ class View:
         self.string_var['lbl_poolshare_deposit'] = tk.StringVar()
         self.string_var['lbl_poolshare_symbol'] = tk.StringVar()
 
+        self.string_var['sv_lbl_poolasset_name'] = tk.StringVar()
+
     def assign_string_var(self):
         self.string_var['sv_lbl_pool_id'].set('Pool:')
         self.string_var['sv_lbl_pool_name'].set('Pool name:')
@@ -302,6 +335,8 @@ class View:
         self.string_var['lbl_poolshare_deposit'].set('0')
         self.string_var['lbl_poolshare_symbol'].set('Share Asset')
 
+        self.string_var['sv_lbl_poolasset_name'].set('(Pool Asset)')
+
     def set_dropdown_values(self, settings):
         self.cmb_pool_id['values'] = settings['valid_assets']
 
@@ -319,6 +354,8 @@ class View:
         self.string_var['sv_lbl_lowest_ask'].set('Lowest Ask: {}'.format(data['market_ticker_object']['lowestAsk']))
         self.string_var['sv_lbl_market_base_volume'].set('24hr Base Volume: {}'.format(data['market_ticker_object']['baseVolume']))
         self.string_var['sv_lbl_market_quote_volume'].set('24hr Quote Volume: {}'.format(data['market_ticker_object']['quoteVolume']))
+
+        self.string_var['sv_lbl_poolasset_name'].set(data['pool_name'])
 
         self.string_var['ls_assets'].set([data['asset_x'].symbol, data['asset_y'].symbol])
         self.string_var['lbl_helper_market_price'].set('')
@@ -339,6 +376,8 @@ class View:
         self.ent_assetx_amount['state'] = 'normal'
         self.ent_assety_amount['state'] = 'normal'
         self.btn_deposit['state'] = 'enabled'
+        self.btn_withdraw['state'] = 'enabled'
+        self.ent_poolasset_amount['state'] = 'normal'
 
         self.loading_pop_up.destroy()
         self.window.update()
@@ -389,6 +428,25 @@ class View:
             data['key'] = simpledialog.askstring('Active Key', 'Enter your active key:', show='*', parent=self.window)
             self.deposit_popup()
             pub.sendMessage('deposit_lp', data=data)
+
+    def withdraw_from_lp(self):
+        data = {
+            'withdraw_amount': self.ent_poolasset_amount.get(),
+            'asset': self.string_var['sv_lbl_poolasset_name'].get(),
+        }
+        answer = messagebox.askyesno(
+            'Verify Action',
+            'You want to withdraw {} {} from the Liquidity Pool?'.format(
+                data['withdraw_amount'],
+                data['asset'],
+            ),
+            parent=self.window
+        )
+        if answer:
+            data['account'] = simpledialog.askstring('Account Name', 'Enter your account:', parent=self.window)
+            data['key'] = simpledialog.askstring('Active Key', 'Enter your active key:', show='*', parent=self.window)
+            self.withdraw_popup()
+            pub.sendMessage('withdraw_lp', data=data)
 
     def take_offer(self):
         data = {
@@ -443,6 +501,20 @@ class View:
                 parent=self.window,
             )
 
+    def print_withdraw(self, data):
+        if len(data) != 0:
+            self.withdraw_pop_up.destroy()
+            self.window.update()
+            messagebox.showinfo(
+                'Withdraw Data',
+                'Withdrew:\n\t{}\nReceived:\n\t{}\n\t{}'.format(
+                    data['paid'],
+                    data['received_x'],
+                    data['received_y']
+                ),
+                parent=self.window,
+            )
+
     def deposit_popup(self):
         self.deposit_pop_up = tk.Toplevel(
             self.window
@@ -456,6 +528,20 @@ class View:
         )
         self.lbl_deposit_pop.grid(row=0, column=0, padx=5, pady=5)
         self.deposit_pop_up.update()
+    
+    def withdraw_popup(self):
+        self.withdraw_pop_up = tk.Toplevel(
+            self.window
+        )
+        pos_x = self.window.winfo_x()
+        pos_y = self.window.winfo_y()
+        self.withdraw_pop_up.geometry(f'+{pos_x}+{pos_y}')
+        self.lbl_withdraw_pop = tk.Label(
+            self.withdraw_pop_up,
+            text='withdrawing from liquidity pool...'
+        )
+        self.lbl_withdraw_pop.grid(row=0, column=0, padx=5, pady=5)
+        self.withdraw_pop_up.update()
 
     def loading_popup(self):
         self.loading_pop_up = tk.Toplevel(

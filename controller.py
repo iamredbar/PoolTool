@@ -17,10 +17,12 @@ class Controller:
         pub.subscribe(self.quit_program_requested, 'quit_program_requested')
         pub.subscribe(self.asset_of_interest_change, 'asset_of_interest_change')
         pub.subscribe(self.deposit_lp, 'deposit_lp')
+        pub.subscribe(self.withdraw_lp, 'withdraw_lp')
         pub.subscribe(self.update_gui, 'update_gui')
         pub.subscribe(self.update_trading_prices, 'update_trading_prices')
         pub.subscribe(self.print_transaction, 'print_transaction')
         pub.subscribe(self.print_deposit, 'print_deposit')
+        pub.subscribe(self.print_withdraw, 'print_withdraw')
         pub.subscribe(self.invalid_pool, 'invalid_pool')
 
     def invalid_pool(self):
@@ -28,6 +30,12 @@ class Controller:
 
     def print_deposit(self, data):
         self.view.print_deposit(data)
+
+    def print_withdraw(self, data):
+        self.view.print_withdraw(data)
+    
+    def withdraw_lp(self, data):
+        self.model.withdraw_lp(data)
 
     def deposit_lp(self, data):
         self.model.deposit_lp(data)

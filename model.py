@@ -151,6 +151,33 @@ class Model:
         else:
             print('deposit operation failed')
 
+    def withdraw_lp(self, data):
+        trade_message = ''
+        new_data = {}
+        try:
+            bitshares = BitShares(nobroadcast=False, keys=data['key'], blocking='head')
+            trade_message = bitshares.withdraw_from_liquidity_pool(
+                pool=data['asset'],
+                share_amount=Amount(
+                    data['withdraw_amount'],
+                    data['asset'],
+                ),
+                account=data['account'],
+            )
+            new_data['operation_results'] = trade_message['operation_results']
+        except Exception as err:
+            print(err)
+        if new_data:
+            try:
+                new_data['paid'] = Amount(new_data['operation_results'][0][1]['paid'][0])
+                new_data['received_x'] = Amount(new_data['operation_results'][0][1]['received'][0])
+                new_data['received_y'] = Amount(new_data['operation_results'][0][1]['received'][1])
+                pub.sendMessage('print_withdraw', data=new_data)
+            except:
+                print('error parsing withdraw operation results')
+        else:
+            print('withdraw operation failed')
+
     def take_offer(self, data):
         bitshares = BitShares(nobroadcast=False, keys=data['key'], blocking='head')
         trade_message = ''
