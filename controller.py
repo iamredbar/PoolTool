@@ -67,13 +67,13 @@ class Controller:
 if __name__ == '__main__':
     window = Tk()
     window.title('PoolTool')
-    window.resizable(False, False)
+    #window.resizable(False, False)
     window.columnconfigure([1,2], weight=1)
 
     app = Controller(window)
 
     windowWidth = window.winfo_reqwidth()
-    windowHeight = window.winfo_reqheight()   
+    windowHeight = window.winfo_reqheight()
     positionRight = int(window.winfo_screenwidth()/2 - windowWidth/2)
     positionDown = int(window.winfo_screenheight()/3 - windowHeight/2)
     window.geometry('+{}+{}'.format(positionRight, positionDown))
