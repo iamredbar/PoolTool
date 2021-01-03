@@ -37,7 +37,7 @@ You will need to set a default node using `uptick`. Syntax is like this:
 
 Example:
 
-```uptick set node 'wss://api.bts.mobi/ws'```
+```uptick set node 'wss://dex.iobanker.com/ws'```
 
 **If this step is not done, it is very unlikely that it will work.**
 
