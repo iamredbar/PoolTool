@@ -22,6 +22,8 @@ move to the PoolTool directory, give the file PoolTool executable status, and in
 it should run just fine after installing the new requirements. I am available if
 you need any help.
 
+Telegram group: https://t.me/pooltool_community_edition
+
 Run with:
 
 ```./PoolTool```
