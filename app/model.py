@@ -4,6 +4,7 @@ from bitshares.asset import Asset
 from bitshares.amount import Amount
 from bitshares.market import Market
 from bitshares.blockchain import Blockchain
+from bitshares.instance import set_shared_blockchain_instance
 from pprint import pprint
 import json
 from websocket import create_connection
@@ -17,7 +18,8 @@ class Model:
             node='wss://api.iamredbar.com/ws',
             nobroadcast=True,
             blocking='head',
-        )  # need to set node here
+        )
+        set_shared_blockchain_instance(self.bs)
         self.pool_id = None
         self.asset_a_precision = None
         self.asset_b_precision = None
