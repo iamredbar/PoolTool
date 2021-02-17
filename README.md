@@ -8,15 +8,17 @@ ENTER THEM EACH TIME YOU LAUNCH THE APP (but not every transaction. thats a win)
 
 ---
 
+```git clone https://github.com/iamredbar/PoolTool --branch beta```
+
 Once downloaded, make sure to do:
 
-```chmod +x PoolTool```
-  
-in the PoolTool directory and also
+```
+cd PoolTool/
+chmod +x PoolTool
+pip3 install -r requirements.txt
+```
 
-```pip3 install -r requirements.txt```
-
-so you are up to date on requirements. If PoolTool was working on your machine,
+move to the PoolTool directory, give the file PoolTool executable status, and install the requirements. If PoolTool was working on your machine,
 it should run just fine after installing the new requirements. I am available if
 you need any help.
 
