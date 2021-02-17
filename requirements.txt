@@ -1,7 +1,6 @@
-uptick==0.2.5
 bitshares==0.7.0
-graphenelib==1.4.0
-PyYAML
+graphenelib
 pypubsub
-matplotlib
-numpy
+kivy
+kivymd
+websocket_client
