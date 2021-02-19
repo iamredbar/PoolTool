@@ -41,7 +41,7 @@ class Model:
     def pool_change(self, new_pool_str):
         new_data = {}
         pool_obj = self.bs.rpc.get_object(new_pool_str.split(' ')[1])
-        pprint(pool_obj)
+        # pprint(pool_obj)
         asset_a = Asset(pool_obj['asset_a'])
         asset_b = Asset(pool_obj['asset_b'])
         share_asset = Asset(pool_obj['share_asset'])
@@ -231,9 +231,44 @@ class Model:
         pub.sendMessage('interaction_return', data=return_data)
 
     def deposit_assets(self, data):
-        for thing in data:
-            print(data[thing])
+        l_bs = BitShares(
+            node='wss://api.iamredbar.com/ws',
+            keys=data['key'],
+            blocking='head',
+            nobroadcast=False,
+        )
+        trade_message = l_bs.deposit_into_liquidity_pool(
+            pool=self.pool_id,
+            amount_a=Amount(data['amount_a'], data['asset_a']),
+            amount_b=Amount(data['amount_b'], data['asset_b']),
+            account=data['account'],
+        )
+        return_data = {
+            'paid_a': Amount(trade_message['operation_results'][0][1]['paid'][0]),
+            'paid_b': Amount(trade_message['operation_results'][0][1]['paid'][1]),
+            'received': Amount(trade_message['operation_results'][0][1]['received'][0]),
+            'operation_results': trade_message['operation_results'],
+            'interaction_type': 'deposit',
+        }
+        pub.sendMessage('interaction_return', data=return_data)
 
     def withdraw_assets(self, data):
-        for thing in data:
-            print(data[thing])
+        l_bs = BitShares(
+            node='wss://api.iamredbar.com/ws',
+            keys=data['key'],
+            blocking='head',
+            nobroadcast=False,
+        )
+        trade_message = l_bs.withdraw_from_liquidity_pool(
+            pool=self.pool_id,
+            share_amount=Amount(data['amount'], data['share_asset']),
+            account=data['account'],
+        )
+        return_data = {
+            'exchanged': Amount(trade_message['operation_results'][0][1]['paid'][0]),
+            'received_a': Amount(trade_message['operation_results'][0][1]['received'][0]),
+            'received_b': Amount(trade_message['operation_results'][0][1]['received'][1]),
+            'operation_results': trade_message['operation_results'],
+            'interaction_type': 'withdraw',
+        }
+        pub.sendMessage('interaction_return', data=return_data)

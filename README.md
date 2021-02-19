@@ -18,12 +18,16 @@ chmod +x PoolTool
 pip3 install -r requirements.txt
 ```
 
-move to the PoolTool directory, give the file PoolTool executable status, and install the requirements. If PoolTool was working on your machine,
-it should run just fine after installing the new requirements. I am available if
-you need any help.
+- move to the PoolTool directory
+- give the file PoolTool executable status (if it doesn't have it already)
+- install the requirements
 
-Telegram group: https://t.me/pooltool_community_edition
+If PoolTool was working on your machine, it should run just fine
+after installing the new requirements. I am available in the Telegram group if
+you need any help: https://t.me/pooltool_community_edition
 
-Run with:
+---
+
+### Run PoolTool with:
 
 ```./PoolTool```

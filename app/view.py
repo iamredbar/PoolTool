@@ -48,7 +48,7 @@ class PoolTool(MDApp):
     """
 
     def __init__(self, **kwargs):
-        # self.icon = 'assets/pool_tool.png'
+        self.icon = 'assets/icon.jpg'
         super().__init__(**kwargs)
         self.view_pools = []
         self.screen = Builder.load_file('app/layout.kv')
@@ -107,15 +107,15 @@ class PoolTool(MDApp):
     """
     These are functions that are triggered by the GUI
     """
-    def _open_settings(self):
-        if self.settings_popup:
-            self.settings_popup = None
-        if not self.settings_popup:
-            self.settings_popup = SettingsPopup(
-                account=self.account,
-                key=self.key,
-            )
-        self.settings_popup.open()
+    # def _open_settings(self):
+    #     if self.settings_popup:
+    #         self.settings_popup = None
+    #     if not self.settings_popup:
+    #         self.settings_popup = SettingsPopup(
+    #             account=self.account,
+    #             key=self.key,
+    #         )
+    #     self.settings_popup.open()
 
     def save_settings(self, account, key):
         self.account = account
@@ -229,6 +229,7 @@ class PoolTool(MDApp):
             bodytext = f'Withdraw:\n{data["amount"]} {data["share_asset"]}\nfor\n{data["asset_a"]} and {data["asset_b"]}?'
             confirmbutton = 'WITHDRAW'
         else:
+            data = {}
             titletext = ''
             bodytext = ''
             confirmbutton = ''
@@ -267,9 +268,14 @@ class PoolTool(MDApp):
             titletext = 'Swap Complete'
             bodytext = f'Paid {data["paid"]} for {data["received"]}\n(anticipated {data["anticipated"]})'
         elif data['interaction_type'] == 'deposit':
-            pass
+            titletext = 'Deposit Complete'
+            bodytext = f'Deposited {data["paid_a"]}\nand {data["paid_b"]}\n for {data["received"]}'
         elif data['interaction_type'] == 'withdraw':
-            pass
+            titletext = 'Withdraw Complete'
+            bodytext = f'Exchanged {data["exchanged"]}\n for {data["received_a"]}\nand {data["received_b"]}'
+        else:
+            titletext = 'Oops'
+            bodytext = 'You shouldn\'t ever see this...'
         popup = ReturnPopup(
             titletext=titletext,
             bodytext=bodytext,
