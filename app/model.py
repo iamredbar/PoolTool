@@ -205,6 +205,12 @@ class Model:
         usd_val = (bts_value_a * bts_usd_val) + (bts_value_b * bts_usd_val)
         return round(usd_val, 2)
 
+    def _verify_active_key(self, key):
+        """
+        returns account from private key
+        """
+        print(self.bs.wallet.getAccountFromPrivateKey(key))
+
     def swap_assets(self, data):
         l_bs = BitShares(
             node='wss://api.iamredbar.com/ws',

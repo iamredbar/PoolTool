@@ -107,15 +107,15 @@ class PoolTool(MDApp):
     """
     These are functions that are triggered by the GUI
     """
-    # def _open_settings(self):
-    #     if self.settings_popup:
-    #         self.settings_popup = None
-    #     if not self.settings_popup:
-    #         self.settings_popup = SettingsPopup(
-    #             account=self.account,
-    #             key=self.key,
-    #         )
-    #     self.settings_popup.open()
+    def _open_settings(self):
+        if self.settings_popup:
+            self.settings_popup = None
+        if not self.settings_popup:
+            self.settings_popup = SettingsPopup(
+                account=self.account,
+                key=self.key,
+            )
+        self.settings_popup.open()
 
     def save_settings(self, account, key):
         self.account = account
