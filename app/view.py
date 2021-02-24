@@ -3,26 +3,30 @@ from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import RectangularElevationBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDFlatButton
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.properties import StringProperty
 from kivy.uix.popup import Popup
+from kivy.clock import Clock
+from kivy.config import Config
 from pubsub import pub
+from functools import partial
 
 Window.size = (400, 650)
 
 
 class CustomToolbar(ThemableBehavior, RectangularElevationBehavior, MDBoxLayout):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    pass
 
 
 class CustomListItem(MDGridLayout):
     asset_a = StringProperty()
     icon = StringProperty()
     asset_b = StringProperty()
+
+
+class LoadingPoolsPopup(Popup):
+    pass
 
 
 class InteractPopup(Popup):
@@ -42,6 +46,10 @@ class SettingsPopup(Popup):
     key = StringProperty()
 
 
+class LoadingPoolInfo(Popup):
+    bodytext = StringProperty()
+
+
 class PoolTool(MDApp):
     """
 
@@ -56,6 +64,8 @@ class PoolTool(MDApp):
         self.interact_popup = None
         self.interact_data = None
         self.settings_popup = None
+        self.loading_pools_popup = None
+        self.loading_pool_info = None
         self.account = ''
         self.key = ''
         self.screen.pool_select_spinner.text = 'Select Pool Here'
@@ -90,18 +100,35 @@ class PoolTool(MDApp):
         self.screen.pool_share_bal_label.text = ''
         self.screen.history_list.clear_widgets()
 
-    def get_pools(self):
-        pub.sendMessage('get_pools')
+    def get_pools(self, caller):
+        if not self.screen.pool_select_spinner.values or caller != 'spinner':
+            if self.loading_pools_popup:
+                self.loading_pools_popup = None
+            if not self.loading_pools_popup:
+                self.loading_pools_popup = LoadingPoolsPopup()
+            self.loading_pools_popup.open()
+            Clock.schedule_once(lambda dt: pub.sendMessage('get_pools'), 0.2)
+
+    def pool_change(self, new_pool):
+        if new_pool != 'Select Pool Here':
+            if self.loading_pool_info:
+                self.loading_pool_info = None
+            if not self.loading_pool_info:
+                temp = f'loading\n{new_pool.split(" ")[0]}\ninfo...'
+                self.loading_pool_info = LoadingPoolInfo(bodytext=temp)
+            self.loading_pool_info.open()
+            Clock.schedule_once(lambda dt: pub.sendMessage(topicName='pool_change', data=new_pool))
 
     def return_pool_list(self, data):
+        self._clear_popups()
         self.screen.pool_select_spinner.values = data
 
     def build(self):
-        self.get_pools()
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = 'LightGreen'
         self.theme_cls.accent_palette = 'Red'
         self.use_kivy_settings = False
+        Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
         return self.screen
 
     """
@@ -120,18 +147,26 @@ class PoolTool(MDApp):
     def save_settings(self, account, key):
         self.account = account
         self.key = key
-        self._clear_settings()
+        self._clear_popups()
 
-    def _clear_settings(self):
+    def _clear_popups(self):
         if self.settings_popup:
             self.settings_popup.dismiss(force=True)
             self.settings_popup = None
-
-    def pool_change(self, new_pool):
-        pub.sendMessage('pool_change', data=new_pool)
+        if self.loading_pools_popup:
+            self.loading_pools_popup.dismiss(force=True)
+            self.loading_pools_popup = None
+        if self.interact_popup:
+            self.interact_popup.dismiss(force=True)
+            self.interact_popup = None
+            self.interact_data = None
+        if self.loading_pool_info:
+            self.loading_pool_info.dismiss(force=True)
+            self.loading_pool_info = None
 
     def update_pool_change(self, data):
         self._clear_gui()
+        self._clear_popups()
         self.screen.swap_card.disabled = False
         self.screen.deposit_card.disabled = False
         self.screen.withdraw_card.disabled = False
@@ -181,21 +216,15 @@ class PoolTool(MDApp):
 
     def _swap_assets(self, data):
         pub.sendMessage('swap_assets', data=data)
-        self._clear_popup()
+        self._clear_popups()
 
     def _deposit_assets(self, data):
         pub.sendMessage('deposit_assets', data=data)
-        self._clear_popup()
+        self._clear_popups()
 
     def _withdraw_assets(self, data):
         pub.sendMessage('withdraw_assets', data=data)
-        self._clear_popup()
-
-    def _clear_popup(self):
-        if self.interact_popup:
-            self.interact_popup.dismiss(force=True)
-            self.interact_popup = None
-            self.interact_data = None
+        self._clear_popups()
 
     def interact(self, btn_text):
         if btn_text == 'SWAP':
@@ -256,7 +285,7 @@ class PoolTool(MDApp):
             elif interaction == 'WITHDRAW':
                 self._withdraw_assets(self.interact_data)
         else:  # they haven't entered an account or key
-            self._clear_popup()
+            self._clear_popups()
             popup = ReturnPopup(
                 titletext='Invalid Account Settings',
                 bodytext='Please check account\ninformation in\nthe settings',

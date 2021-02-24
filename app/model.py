@@ -39,6 +39,7 @@ class Model:
         self.withdraw_fee = None
 
     def pool_change(self, new_pool_str):
+        # print(new_pool_str)
         new_data = {}
         pool_obj = self.bs.rpc.get_object(new_pool_str.split(' ')[1])
         # pprint(pool_obj)

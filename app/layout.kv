@@ -39,7 +39,7 @@
                 size_hint: 1, 1
                 text: 'Cancel'
                 theme_text_color: 'Secondary'
-                on_release: app._clear_popup()
+                on_release: app._clear_popups()
             MDRaisedButton:
                 size_hint: 1, 1
                 text: root.confirmbutton
@@ -60,6 +60,7 @@
                 id: account
                 size_hint: 1, 0.5
                 multiline: False
+                write_tab: False
                 text: root.account
                 halign: 'center'
                 helper_text: 'Account'
@@ -68,6 +69,9 @@
                 id: key
                 size_hint: 1, 0.5
                 multiline: False
+                write_tab: False
+                password: True
+                password_mask: '$'
                 text: root.key
                 halign: 'center'
                 helper_text: 'Key'
@@ -86,9 +90,8 @@
     MDBoxLayout:
         orientation: 'vertical'
         size_hint: 1, 1
-        Widget:
         MDLabel:
-            size_hint: 1, None
+            #size_hint: 1, 0.4
             halign: 'center'
             text: root.bodytext
             theme_text_color: 'Primary'
@@ -96,6 +99,36 @@
             text: '(click outside this box to continue)'
             theme_text_color: 'Secondary'
             halign: 'center'
+
+<LoadingPoolsPopup>:
+    size_hint: 0.75, 0.4
+    title: 'Loading'
+    separator_color: '#669f38'
+    auto_dismiss: False
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        MDLabel:
+            text: 'loading pools...'
+            theme_text_color: 'Primary'
+            halign: 'center'
+        MDLabel:
+            text: '(this could take a few seconds)'
+            halign: 'center'
+            theme_text_color: 'Secondary'
+
+<LoadingPoolInfo>:
+    size_hint: 0.75, 0.4
+    title: 'Loading'
+    separator_color: '#669f38'
+    auto_dismiss: True
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        MDLabel:
+            text: root.bodytext
+            halign: 'center'
+            theme_text_color: 'Primary'
 
 MDScreen:
     swap_card: swap_card
@@ -125,7 +158,6 @@ MDScreen:
     asset_a_balance: asset_a_balance
     asset_b_balance: asset_b_balance
     history_list: history_list
-
     MDBoxLayout:
         orientation: 'vertical'
         CustomToolbar:
@@ -150,6 +182,7 @@ MDScreen:
                 pos_hint: {'center_y': 0.5, 'right': 1}
                 #background_color: app.theme_cls.primary_light
                 values: []
+                on_touch_down: app.get_pools('spinner')
                 on_text: app.pool_change(self.text)
             MDIconButton:
                 size_hint: None, None
@@ -160,7 +193,7 @@ MDScreen:
                 name: 'swap'
                 text: 'Swap'
                 icon: 'swap-horizontal-variant'
-                FloatLayout:
+                MDFloatLayout:
                     orientation: 'vertical'
                     size_hint: 1, 1
                     ContentCard:
@@ -240,7 +273,7 @@ MDScreen:
                 name: 'deposit'
                 text: 'Deposit'
                 icon: 'arrow-down'
-                FloatLayout:
+                MDFloatLayout:
                     orientation: 'vertical'
                     size_hint: 1, 1
                     ContentCard:
@@ -257,6 +290,7 @@ MDScreen:
                                 id: deposit_a_text_field
                                 required: True
                                 multiline: False
+                                write_tab: False
                                 halign: 'center'
                                 input_filter: 'float'
                                 theme_text_color: 'Primary'
@@ -293,6 +327,7 @@ MDScreen:
                                 id: deposit_b_text_field
                                 required: True
                                 multiline: False
+                                write_tab: False
                                 halign: 'center'
                                 input_filter: 'float'
                                 theme_text_color: 'Primary'
@@ -319,9 +354,9 @@ MDScreen:
                 name: 'withdraw'
                 text: 'Withdraw'
                 icon: 'arrow-up'
-                BoxLayout:
+                MDBoxLayout:
                     orientation: 'vertical'
-                    FloatLayout:
+                    MDFloatLayout:
                         size_hint: 1, 1
                         ContentCard:
                             id: withdraw_card
@@ -399,9 +434,9 @@ MDScreen:
                 name: 'stats'
                 text: 'Stats'
                 icon: 'information-outline'
-                BoxLayout:
+                MDBoxLayout:
                     orientation: 'vertical'
-                    FloatLayout:
+                    MDFloatLayout:
                         size_hint: 1, 1
                         ContentCard:
                             id: info_card
