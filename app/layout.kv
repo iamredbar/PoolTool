@@ -58,7 +58,7 @@
             size_hint: 1, 1
             MDTextField:
                 id: account
-                size_hint: 1, 0.5
+                size_hint: 1, 0.33
                 multiline: False
                 write_tab: False
                 text: root.account
@@ -67,7 +67,7 @@
                 helper_text_mode: 'persistent'
             MDTextField:
                 id: key
-                size_hint: 1, 0.5
+                size_hint: 1, 0.33
                 multiline: False
                 write_tab: False
                 password: True
@@ -76,12 +76,20 @@
                 halign: 'center'
                 helper_text: 'Key'
                 helper_text_mode: 'persistent'
-        Widget:
+            MDTextField:
+                id: node
+                size_hint: 1, 0.33
+                multiline: False
+                write_tab: False
+                text: root.node
+                halign: 'center'
+                helper_text: 'Node'
+                helper_text_mode: 'persistent'
         MDRaisedButton:
             size_hint: 1, 0.3
             text: 'Save Settings'
             md_bg_color: self.theme_cls.primary_color
-            on_release: app.save_settings(account.text, key.text)
+            on_release: app.save_settings(account.text, key.text, node.text)
 
 <ReturnPopup>:
     size_hint: 0.75, 0.4

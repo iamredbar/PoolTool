@@ -44,6 +44,7 @@ class ReturnPopup(Popup):
 class SettingsPopup(Popup):
     account = StringProperty()
     key = StringProperty()
+    node = StringProperty()
 
 
 class LoadingPoolInfo(Popup):
@@ -68,6 +69,7 @@ class PoolTool(MDApp):
         self.loading_pool_info = None
         self.account = ''
         self.key = ''
+        self.node = 'wss://newyork.bitshares.im/ws'  # default in settings
         self.screen.pool_select_spinner.text = 'Select Pool Here'
         self._init_gui()
 
@@ -107,7 +109,8 @@ class PoolTool(MDApp):
             if not self.loading_pools_popup:
                 self.loading_pools_popup = LoadingPoolsPopup()
             self.loading_pools_popup.open()
-            Clock.schedule_once(lambda dt: pub.sendMessage('get_pools'), 0.2)
+            data = self.node
+            Clock.schedule_once(lambda dt: pub.sendMessage('get_pools', data=data), 0.2)
 
     def pool_change(self, new_pool):
         if new_pool != 'Select Pool Here':
@@ -141,12 +144,14 @@ class PoolTool(MDApp):
             self.settings_popup = SettingsPopup(
                 account=self.account,
                 key=self.key,
+                node=self.node,
             )
         self.settings_popup.open()
 
-    def save_settings(self, account, key):
+    def save_settings(self, account, key, node):
         self.account = account
         self.key = key
+        self.node = node
         self._clear_popups()
 
     def _clear_popups(self):
@@ -295,13 +300,13 @@ class PoolTool(MDApp):
     def interaction_return(self, data):
         if data['interaction_type'] == 'swap':
             titletext = 'Swap Complete'
-            bodytext = f'Paid {data["paid"]} for {data["received"]}\n(anticipated {data["anticipated"]})'
+            bodytext = f'Paid {data["paid"]}\nfor {data["received"]}\n(anticipated {data["anticipated"]})'
         elif data['interaction_type'] == 'deposit':
             titletext = 'Deposit Complete'
-            bodytext = f'Deposited {data["paid_a"]}\nand {data["paid_b"]}\n for {data["received"]}'
+            bodytext = f'Deposited {data["paid_a"]}\nand {data["paid_b"]}\nfor {data["received"]}'
         elif data['interaction_type'] == 'withdraw':
             titletext = 'Withdraw Complete'
-            bodytext = f'Exchanged {data["exchanged"]}\n for {data["received_a"]}\nand {data["received_b"]}'
+            bodytext = f'Exchanged {data["exchanged"]}\nfor {data["received_a"]}\nand {data["received_b"]}'
         else:
             titletext = 'Oops'
             bodytext = 'You shouldn\'t ever see this...'

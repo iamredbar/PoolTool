@@ -32,8 +32,8 @@ class Controller:
     def update_pool_estimate(self, data):
         self.view.update_pool_estimate(data)
 
-    def get_pools(self):
-        self.model.get_pools()
+    def get_pools(self, data):
+        self.model.get_pools(data)
 
     def return_pool_list(self, data):
         self.view.return_pool_list(data)

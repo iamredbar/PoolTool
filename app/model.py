@@ -14,12 +14,16 @@ class Model:
     BLOCK_HOUR = 1200
 
     def __init__(self, **kwargs):
-        self.bs = BitShares(
-            node='wss://api.iamredbar.com/ws',
-            nobroadcast=True,
-            blocking='head',
-        )
-        set_shared_blockchain_instance(self.bs)
+        # self.bs = BitShares(
+        #     node='wss://api.iamredbar.com/ws',
+        #     nobroadcast=True,
+        #     blocking='head',
+        # )
+        # set_shared_blockchain_instance(self.bs)
+        self.bs = None
+        self.keyed_bs = None
+        self.ws = None
+        self.node = None
         self.pool_id = None
         self.asset_a_precision = None
         self.asset_b_precision = None
@@ -80,7 +84,7 @@ class Model:
         self.withdraw_fee = f'{pool_obj["withdrawal_fee_percent"] / 100}%'
         new_data['withdraw_fee'] = self.withdraw_fee
         # this is the generation of the history panel information
-        ws = create_connection('wss://api.iamredbar.com/ws')
+        # ws = create_connection('wss://api.iamredbar.com/ws')
         buckets = [100, 200, 300]
         op_list = {}
         prev_result = None
@@ -99,8 +103,8 @@ class Model:
                            ]
                        ]
                        }
-            ws.send(json.dumps(payload))
-            result = ws.recv()
+            self.ws.send(json.dumps(payload))
+            result = self.ws.recv()
             r = json.loads(result)
             if prev_result == r:
                 break
@@ -172,8 +176,15 @@ class Model:
         )
         pub.sendMessage('update_pool_estimate', data=str(output_amount))
 
-    def get_pools(self):
-        ws = create_connection('wss://api.iamredbar.com/ws')
+    def get_pools(self, data):
+        self.node = data
+        self.bs = BitShares(
+            node=self.node,
+            nobroadcast=True,
+            blocking='head',
+        )
+        set_shared_blockchain_instance(self.bs)
+        self.ws = create_connection(self.node)
         payload1 = {
             "id": 1,
             "method": "call",
@@ -183,8 +194,8 @@ class Model:
                 []
             ]
         }
-        ws.send(json.dumps(payload1))
-        result1 = ws.recv()
+        self.ws.send(json.dumps(payload1))
+        result1 = self.ws.recv()
         r = json.loads(result1)
         data = []
         for i in r['result']:
@@ -213,8 +224,8 @@ class Model:
         print(self.bs.wallet.getAccountFromPrivateKey(key))
 
     def swap_assets(self, data):
-        l_bs = BitShares(
-            node='wss://api.iamredbar.com/ws',
+        self.keyed_bs = BitShares(
+            node=self.node,
             keys=data['key'],
             blocking='head',
             nobroadcast=False,
@@ -222,7 +233,7 @@ class Model:
         amount_to_sell = Amount(data["sell_amount"], data["sell_asset"])
         anticipated = Amount(data['receive_approx_amount'], data['receive_asset'])
         min_to_receive = anticipated * 0.993
-        trade_message = l_bs.exchange_with_liquidity_pool(
+        trade_message = self.keyed_bs.exchange_with_liquidity_pool(
             pool=self.pool_id,
             amount_to_sell=amount_to_sell,
             min_to_receive=min_to_receive,
@@ -238,13 +249,13 @@ class Model:
         pub.sendMessage('interaction_return', data=return_data)
 
     def deposit_assets(self, data):
-        l_bs = BitShares(
+        self.keyed_bs = BitShares(
             node='wss://api.iamredbar.com/ws',
             keys=data['key'],
             blocking='head',
             nobroadcast=False,
         )
-        trade_message = l_bs.deposit_into_liquidity_pool(
+        trade_message = self.keyed_bs.deposit_into_liquidity_pool(
             pool=self.pool_id,
             amount_a=Amount(data['amount_a'], data['asset_a']),
             amount_b=Amount(data['amount_b'], data['asset_b']),
@@ -260,13 +271,13 @@ class Model:
         pub.sendMessage('interaction_return', data=return_data)
 
     def withdraw_assets(self, data):
-        l_bs = BitShares(
+        self.keyed_bs = BitShares(
             node='wss://api.iamredbar.com/ws',
             keys=data['key'],
             blocking='head',
             nobroadcast=False,
         )
-        trade_message = l_bs.withdraw_from_liquidity_pool(
+        trade_message = self.keyed_bs.withdraw_from_liquidity_pool(
             pool=self.pool_id,
             share_amount=Amount(data['amount'], data['share_asset']),
             account=data['account'],
