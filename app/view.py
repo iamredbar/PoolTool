@@ -69,7 +69,7 @@ class PoolTool(MDApp):
         self.loading_pool_info = None
         self.account = ''
         self.key = ''
-        self.node = 'wss://newyork.bitshares.im/ws'  # default in settings
+        self.node = 'wss://api.iamredbar.com/ws'  # default in settings
         self.screen.pool_select_spinner.text = 'Select Pool Here'
         self._init_gui()
 

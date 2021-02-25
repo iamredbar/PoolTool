@@ -5,6 +5,7 @@ from bitshares.amount import Amount
 from bitshares.market import Market
 from bitshares.blockchain import Blockchain
 from bitshares.instance import set_shared_blockchain_instance
+from bitshares.utils import formatTimeFromNow
 from pprint import pprint
 import json
 from websocket import create_connection
@@ -84,37 +85,29 @@ class Model:
         self.withdraw_fee = f'{pool_obj["withdrawal_fee_percent"] / 100}%'
         new_data['withdraw_fee'] = self.withdraw_fee
         # this is the generation of the history panel information
-        # ws = create_connection('wss://api.iamredbar.com/ws')
-        buckets = [100, 200, 300]
         op_list = {}
-        prev_result = None
-        for bucket in buckets:
-            payload = {"id": 1,
-                       "method": "call",
-                       "params": [
-                           "history",
-                           "get_liquidity_pool_history_by_sequence",
-                           [
-                               new_pool_str.split(' ')[1],
-                               bucket,
-                               None,
-                               100,
-                               63
-                           ]
+        payload = {"id": 1,
+                   "method": "call",
+                   "params": [
+                       "history",
+                       "get_liquidity_pool_history",
+                       [
+                           new_pool_str.split(' ')[1],
+                           formatTimeFromNow(0),
+                           None,
+                           100,
+                           63
                        ]
-                       }
-            self.ws.send(json.dumps(payload))
-            result = self.ws.recv()
-            r = json.loads(result)
-            if prev_result == r:
-                break
-            else:
-                if not r['result']:
-                    break
-                for i in r['result']:
-                    if not i['sequence'] in op_list.keys():
-                        op_list[i['sequence']] = i
-            prev_result = r
+                   ]
+                   }
+        self._set_ws_connection()
+        self.ws.send(json.dumps(payload))
+        result = self.ws.recv()
+        r = json.loads(result)
+        if r['result']:
+            for i in r['result']:
+                if not i['sequence'] in op_list.keys():
+                    op_list[i['sequence']] = i
         sort_order = sorted(op_list, reverse=True)
         new_data['history'] = []
         for op in sort_order:
@@ -136,7 +129,7 @@ class Model:
                 }
             )
         # Generate activity from history for stats panel
-        _last_confirmed_block = Blockchain(blockchain_instance=self.bs, mode='irreversible').get_current_block_num()
+        _last_confirmed_block = Blockchain(mode='irreversible').get_current_block_num()
         swap_count = 0
         for op in sort_order:
             if op_list[op]['op']['block_num'] > _last_confirmed_block - (self.BLOCK_HOUR * 24):
@@ -176,6 +169,9 @@ class Model:
         )
         pub.sendMessage('update_pool_estimate', data=str(output_amount))
 
+    def _set_ws_connection(self):
+        self.ws = create_connection(self.node)
+
     def get_pools(self, data):
         self.node = data
         self.bs = BitShares(
@@ -184,7 +180,7 @@ class Model:
             blocking='head',
         )
         set_shared_blockchain_instance(self.bs)
-        self.ws = create_connection(self.node)
+        self._set_ws_connection()
         payload1 = {
             "id": 1,
             "method": "call",
@@ -217,19 +213,25 @@ class Model:
         usd_val = (bts_value_a * bts_usd_val) + (bts_value_b * bts_usd_val)
         return round(usd_val, 2)
 
-    def _verify_active_key(self, key):
-        """
-        returns account from private key
-        """
-        print(self.bs.wallet.getAccountFromPrivateKey(key))
+    # def _verify_active_key(self, key):
+    #     """
+    #     returns account from private key
+    #     this will be used to verify whether or not the
+    #     supplied key will be sufficient enough to do the
+    #     operation
+    #     """
+    #     print(self.bs.wallet.getAccountFromPrivateKey(key))
 
-    def swap_assets(self, data):
+    def _set_keyed_bs(self, key):
         self.keyed_bs = BitShares(
             node=self.node,
-            keys=data['key'],
+            keys=key,
             blocking='head',
             nobroadcast=False,
         )
+
+    def swap_assets(self, data):
+        self._set_keyed_bs(data['key'])
         amount_to_sell = Amount(data["sell_amount"], data["sell_asset"])
         anticipated = Amount(data['receive_approx_amount'], data['receive_asset'])
         min_to_receive = anticipated * 0.993
@@ -249,12 +251,7 @@ class Model:
         pub.sendMessage('interaction_return', data=return_data)
 
     def deposit_assets(self, data):
-        self.keyed_bs = BitShares(
-            node='wss://api.iamredbar.com/ws',
-            keys=data['key'],
-            blocking='head',
-            nobroadcast=False,
-        )
+        self._set_keyed_bs(data['key'])
         trade_message = self.keyed_bs.deposit_into_liquidity_pool(
             pool=self.pool_id,
             amount_a=Amount(data['amount_a'], data['asset_a']),
@@ -271,12 +268,7 @@ class Model:
         pub.sendMessage('interaction_return', data=return_data)
 
     def withdraw_assets(self, data):
-        self.keyed_bs = BitShares(
-            node='wss://api.iamredbar.com/ws',
-            keys=data['key'],
-            blocking='head',
-            nobroadcast=False,
-        )
+        self._set_keyed_bs(data['key'])
         trade_message = self.keyed_bs.withdraw_from_liquidity_pool(
             pool=self.pool_id,
             share_amount=Amount(data['amount'], data['share_asset']),
