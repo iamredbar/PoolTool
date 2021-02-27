@@ -3,14 +3,14 @@ from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import RectangularElevationBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
+from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ColorProperty
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.config import Config
 from pubsub import pub
-from functools import partial
 
 Window.size = (400, 650)
 
@@ -23,6 +23,8 @@ class CustomListItem(MDGridLayout):
     asset_a = StringProperty()
     icon = StringProperty()
     asset_b = StringProperty()
+    price = StringProperty()
+    price_color = ColorProperty()
 
 
 class LoadingPoolsPopup(Popup):
@@ -45,6 +47,7 @@ class SettingsPopup(Popup):
     account = StringProperty()
     key = StringProperty()
     node = StringProperty()
+    denomination = StringProperty()
 
 
 class LoadingPoolInfo(Popup):
@@ -70,6 +73,7 @@ class PoolTool(MDApp):
         self.account = ''
         self.key = ''
         self.node = 'wss://api.iamredbar.com/ws'  # default in settings
+        self.denomination = 'BitUSD'  # default in settings
         self.screen.pool_select_spinner.text = 'Select Pool Here'
         self._init_gui()
 
@@ -109,7 +113,10 @@ class PoolTool(MDApp):
             if not self.loading_pools_popup:
                 self.loading_pools_popup = LoadingPoolsPopup()
             self.loading_pools_popup.open()
-            data = self.node
+            data = {
+                'node': self.node,
+                'denomination': self.denomination,
+            }
             Clock.schedule_once(lambda dt: pub.sendMessage('get_pools', data=data), 0.2)
 
     def pool_change(self, new_pool):
@@ -121,6 +128,9 @@ class PoolTool(MDApp):
                 self.loading_pool_info = LoadingPoolInfo(bodytext=temp)
             self.loading_pool_info.open()
             Clock.schedule_once(lambda dt: pub.sendMessage(topicName='pool_change', data=new_pool))
+
+    def refresh_stats_panel(self, data):
+        pass
 
     def return_pool_list(self, data):
         self._clear_popups()
@@ -145,13 +155,16 @@ class PoolTool(MDApp):
                 account=self.account,
                 key=self.key,
                 node=self.node,
+                denomination=self.denomination,
             )
         self.settings_popup.open()
 
-    def save_settings(self, account, key, node):
+    def save_settings(self, account, key, node, denomination):
         self.account = account
         self.key = key
         self.node = node
+        self.denomination = denomination
+        pub.sendMessage('set_denomination', data=denomination)
         self._clear_popups()
 
     def _clear_popups(self):
@@ -182,21 +195,31 @@ class PoolTool(MDApp):
         self.screen.pool_share_balance.text = data['share_asset_balance']
         self.screen.pool_share_bal_label.text = data['share_asset_symbol']
         self.screen.withdraw_share_asset_label.text = data['share_asset_symbol']
-        self.screen.value_label.text = f'${data["value"]:,.2f}'
-        self.screen.swap_count.text = str(data['swap_count'])
+        self.screen.value_label.text = f'{data["value"]}'
+        self.screen.swap_count.text = str(data['swap_count']) if data['swap_count'] < 100 else '100+'
         self.screen.swap_fee.text = data['swap_fee']
         self.screen.withdraw_fee.text = data['withdraw_fee']
-        self.screen.poolshare_value.text = f'${data["poolshare_value"]:,.2f}\nper share'
+        self.screen.poolshare_value.text = f'{data["poolshare_value"]}\nper share'
         self.screen.asset_a_balance.text = f'{data["asset_a_balance"]}\n{data["asset_a_symbol"]}'
         self.screen.asset_b_balance.text = f'{data["asset_b_balance"]}\n{data["asset_b_symbol"]}'
-        for op in data['history']:
+        self.generate_history_panel(data['history'])
+
+    def generate_history_panel(self, history):
+        self.screen.history_list.clear_widgets()
+        for op in history:
             self.screen.history_list.add_widget(
                 CustomListItem(
                     asset_a=op['asset_a'],
                     icon=op['icon'],
-                    asset_b=op['asset_b']
+                    price=op['price'],
+                    price_color=op['price_color'],
+                    asset_b=op['asset_b'],
                 )
             )
+
+    def generate_stats_panel(self, data):
+        self.screen.value_label.text = f'{data["value"]}'
+        self.screen.poolshare_value.text = f'{data["poolshare_value"]}\nper share'
 
     def _interchange_assets_swap(self):
         tmp_a = self.screen.swap_asset_button.text
@@ -214,6 +237,10 @@ class PoolTool(MDApp):
             'purchase_asset': self.screen.other_asset.text
         }
         pub.sendMessage('update_pool_price', data=send_data)
+
+    def price_swap(self, sender):
+        if sender == 'price_switch':
+            pub.sendMessage('price_swap')
 
     def update_pool_estimate(self, amount):
         self.screen.swap_estimate.text = amount

@@ -9,14 +9,23 @@
     cols: 3
     radius: 33,33,33,33
     padding: '10dp'
+    rows_minimum: {0:root.height/5}
     MDLabel:
         text: root.asset_a
         theme_text_color: 'Primary'
         halign: 'center'
-    MDIcon:
-        icon: root.icon
-        theme_text_color: 'Primary'
-        halign: 'center'
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDIcon:
+            icon: root.icon
+            theme_text_color: 'Primary'
+            halign: 'center'
+        MDLabel:
+            text: root.price
+            theme_text_color: 'Custom'
+            text_color: root.price_color
+            halign: 'center'
+            font_style: 'Body1'
     MDLabel
         text: root.asset_b
         theme_text_color: 'Primary'
@@ -25,7 +34,7 @@
 <InteractPopup>:
     title: root.titletext
     size_hint: (0.75, 0.5)
-    separator_color: '#669f38'
+    separator_color: '#669f38' # <- this is green, #e9002c is red
     MDBoxLayout:
         orientation: 'vertical'
         MDLabel:
@@ -58,7 +67,7 @@
             size_hint: 1, 1
             MDTextField:
                 id: account
-                size_hint: 1, 0.33
+                size_hint: 1, 0.25
                 multiline: False
                 write_tab: False
                 text: root.account
@@ -67,7 +76,7 @@
                 helper_text_mode: 'persistent'
             MDTextField:
                 id: key
-                size_hint: 1, 0.33
+                size_hint: 1, 0.25
                 multiline: False
                 write_tab: False
                 password: True
@@ -78,18 +87,29 @@
                 helper_text_mode: 'persistent'
             MDTextField:
                 id: node
-                size_hint: 1, 0.33
+                size_hint: 1, 0.25
                 multiline: False
                 write_tab: False
                 text: root.node
                 halign: 'center'
                 helper_text: 'Node'
                 helper_text_mode: 'persistent'
+            MDBoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1, 0.25
+                MDLabel:
+                    text: 'Default\nDenomination:'
+                    theme_text_color: 'Primary'
+                Spinner:
+                    id: denomination
+                    size_hint: 1, 1
+                    text: root.denomination
+                    values: ['BitUSD', 'BTS', 'BitCNY']
         MDRaisedButton:
             size_hint: 1, 0.3
             text: 'Save Settings'
             md_bg_color: self.theme_cls.primary_color
-            on_release: app.save_settings(account.text, key.text, node.text)
+            on_release: app.save_settings(account.text, key.text, node.text, denomination.text)
 
 <ReturnPopup>:
     size_hint: 0.75, 0.4
@@ -166,6 +186,8 @@ MDScreen:
     asset_a_balance: asset_a_balance
     asset_b_balance: asset_b_balance
     history_list: history_list
+    price_switch: price_switch
+
     MDBoxLayout:
         orientation: 'vertical'
         CustomToolbar:
@@ -542,12 +564,21 @@ MDScreen:
                     md_bg_color: app.theme_cls.bg_light
                     radius: 33,33,33,33
                     padding: 10, 10, 10, 10
-                    MDLabel:
-                        text: 'Swap History'
-                        halign: 'center'
-                        font_style: 'H4'
-                        theme_text_color: 'Primary'
-                        size_hint: 1, 0.1
+                    MDBoxLayout:
+                        size_hint: 1, 0.12
+                        orientation: 'horizontal'
+                        MDLabel:
+                            text: 'Swap History'
+                            halign: 'center'
+                            font_style: 'H4'
+                            theme_text_color: 'Primary'
+                        MDIconButton:
+                            id: price_switch
+                            icon: 'swap-horizontal-variant'
+                            halign: 'center'
+                            theme_text_color: 'Custom'
+                            text_color: app.theme_cls.primary_color
+                            on_release: app.price_swap(sender='price_switch')
                     MDSeparator:
                     ScrollView:
                         MDList:

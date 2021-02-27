@@ -15,16 +15,11 @@ class Model:
     BLOCK_HOUR = 1200
 
     def __init__(self, **kwargs):
-        # self.bs = BitShares(
-        #     node='wss://api.iamredbar.com/ws',
-        #     nobroadcast=True,
-        #     blocking='head',
-        # )
-        # set_shared_blockchain_instance(self.bs)
         self.bs = None
         self.keyed_bs = None
         self.ws = None
         self.node = None
+        self.denomination = None
         self.pool_id = None
         self.asset_a_precision = None
         self.asset_b_precision = None
@@ -42,12 +37,24 @@ class Model:
         self.share_asset_balance = None
         self.swap_fee = None
         self.withdraw_fee = None
+        self.price_switch = 'b/a'
+        self.history = []
+        self.usd_val_a = 0
+        self.usd_val_b = 0
+        self.bts_val_a = 0
+        self.bts_val_b = 0
+        self.cny_val_a = 0
+        self.cny_val_b = 0
 
     def pool_change(self, new_pool_str):
-        # print(new_pool_str)
         new_data = {}
         pool_obj = self.bs.rpc.get_object(new_pool_str.split(' ')[1])
-        # pprint(pool_obj)
+        self.usd_val_a = 0
+        self.usd_val_b = 0
+        self.bts_val_a = 0
+        self.bts_val_b = 0
+        self.cny_val_a = 0
+        self.cny_val_b = 0
         asset_a = Asset(pool_obj['asset_a'])
         asset_b = Asset(pool_obj['asset_b'])
         share_asset = Asset(pool_obj['share_asset'])
@@ -84,7 +91,64 @@ class Model:
         new_data['swap_fee'] = self.swap_fee
         self.withdraw_fee = f'{pool_obj["withdrawal_fee_percent"] / 100}%'
         new_data['withdraw_fee'] = self.withdraw_fee
-        # this is the generation of the history panel information
+        history_info = self.generate_history(new_pool_str.split(' ')[1])
+        # Get pool value
+        self._get_pool_value(
+            self.asset_a_symbol,
+            self.asset_a_balance,
+            self.asset_b_symbol,
+            self.asset_b_balance,
+        )
+        if self.denomination == 'BitUSD':
+            _precision = 2
+            new_data['value'] = f'{(self.usd_val_a + self.usd_val_b):.2f} USD'
+        elif self.denomination == 'BTS':
+            _precision = 5
+            new_data['value'] = f'{(self.bts_val_a + self.bts_val_b):.5f} BTS'
+        elif self.denomination == 'BitCNY':
+            _precision = 4
+            new_data['value'] = f'{(self.cny_val_a + self.cny_val_b):.4f} CNY'
+        new_data['swap_count'] = history_info['swap_count']
+        new_data['history'] = []
+        for item in history_info['history']:
+            new_data['history'].append(item)
+        if float(self.share_asset_balance) != 0:
+            new_data['poolshare_value'] = f'{round(float(new_data["value"].split(" ")[0]) / float(self.share_asset_balance), _precision)} {new_data["value"].split(" ")[1]}'
+        else:
+            new_data['poolshare_value'] = 0
+        pub.sendMessage('update_pool_change', data=new_data)
+
+    def display_pool_value(self):
+        pass
+
+    def price_swap(self):
+        self.price_switch = 'a/b' if self.price_switch == 'b/a' else 'b/a'
+        history = []
+        for op in self.history:
+            if self.price_switch == 'a/b':
+                history.append(
+                    {
+                        'asset_a': op['asset_a'],
+                        'icon': op['icon'],
+                        'asset_b': op['asset_b'],
+                        'price': op['price_ab'],
+                        'price_color': op['price_ab_color'],
+                    }
+                )
+            else:
+                history.append(
+                    {
+                        'asset_a': op['asset_a'],
+                        'icon': op['icon'],
+                        'asset_b': op['asset_b'],
+                        'price': op['price_ba'],
+                        'price_color': op['price_ba_color'],
+                    }
+                )
+        pub.sendMessage('refresh_history_panel', data=history)
+
+    def generate_history(self, pool):
+        return_data = {}
         op_list = {}
         payload = {"id": 1,
                    "method": "call",
@@ -92,7 +156,7 @@ class Model:
                        "history",
                        "get_liquidity_pool_history",
                        [
-                           new_pool_str.split(' ')[1],
+                           pool,
                            formatTimeFromNow(0),
                            None,
                            100,
@@ -109,9 +173,10 @@ class Model:
                 if not i['sequence'] in op_list.keys():
                     op_list[i['sequence']] = i
         sort_order = sorted(op_list, reverse=True)
-        new_data['history'] = []
-        for op in sort_order:
-            # the dictionary keys are always asset_a icon asset_b
+        return_data['history'] = []
+        _prev_price = None
+        for index, op in enumerate(sort_order):
+            # the dictionary keys are always asset_a, icon, asset_b, price, price_color
             # this determines what is for sale, and puts the correct arrow and asset order
             if op_list[op]['op']['op'][1]['amount_to_sell']['asset_id'] == self.asset_a_id:
                 icon = 'arrow-right'
@@ -121,11 +186,38 @@ class Model:
                 icon = 'arrow-left'
                 asset_a = str(Amount(op_list[op]['op']['result'][1]['received'][0]))
                 asset_b = str(Amount(op_list[op]['op']['result'][1]['paid'][0]))
-            new_data['history'].append(
+            try:
+                if op_list[sort_order[index + 1]]['op']['op'][1]['amount_to_sell']['asset_id'] == self.asset_a_id:
+                    _asset_a = str(Amount(op_list[sort_order[index + 1]]['op']['result'][1]['paid'][0]))
+                    _asset_b = str(Amount(op_list[sort_order[index + 1]]['op']['result'][1]['received'][0]))
+                else:
+                    _asset_a = str(Amount(op_list[sort_order[index + 1]]['op']['result'][1]['received'][0]))
+                    _asset_b = str(Amount(op_list[sort_order[index + 1]]['op']['result'][1]['paid'][0]))
+            except:
+                pass
+            _price_ab = float(asset_a.split(' ')[0].replace(',', '')) / float(asset_b.split(' ')[0].replace(',', ''))
+            _price_ba = float(asset_b.split(' ')[0].replace(',', '')) / float(asset_a.split(' ')[0].replace(',', ''))
+            # check previous y/x price, change color depending on result
+            price_ab_color = '#808080'
+            price_ba_color = '#808080'
+            if index != 99:
+                _prev_price_ab = float(_asset_a.split(' ')[0].replace(',', '')) / float(_asset_b.split(' ')[0].replace(',', ''))
+                _prev_price_ba = float(_asset_b.split(' ')[0].replace(',', '')) / float(_asset_a.split(' ')[0].replace(',', ''))
+                if _price_ab > _prev_price_ab:
+                    price_ab_color = '#669f38'
+                    price_ba_color = '#e9002c'
+                elif _price_ab < _prev_price_ab:
+                    price_ab_color = '#e9002c'
+                    price_ba_color = '#669f38'
+            self.history.append(
                 {
                     'asset_a': asset_a,
                     'icon': icon,
-                    'asset_b': asset_b
+                    'asset_b': asset_b,
+                    'price_ab': f'{_price_ab:.3f}',
+                    'price_ab_color': price_ab_color,
+                    'price_ba': f'{_price_ba:.3f}',
+                    'price_ba_color': price_ba_color,
                 }
             )
         # Generate activity from history for stats panel
@@ -134,15 +226,53 @@ class Model:
         for op in sort_order:
             if op_list[op]['op']['block_num'] > _last_confirmed_block - (self.BLOCK_HOUR * 24):
                 swap_count += 1
-        # Get pool value
-        new_data['value'] = self._get_pool_value(self.asset_a_symbol, self.asset_a_balance, self.asset_b_symbol, self.asset_b_balance)
-        new_data['swap_count'] = swap_count
-        if float(new_data['share_asset_balance']) != 0:
-            new_data['poolshare_value'] = float(new_data['value'] / float(new_data['share_asset_balance']))
+        return_data['swap_count'] = swap_count
+        for op in self.history:
+            if self.price_switch == 'b/a':
+                return_data['history'].append(
+                    {
+                        'asset_a': op['asset_a'],
+                        'icon': op['icon'],
+                        'asset_b': op['asset_b'],
+                        'price': op['price_ba'],
+                        'price_color': op['price_ba_color'],
+                    }
+                )
+            else:
+                return_data['history'].append(
+                    {
+                        'asset_a': op['asset_a'],
+                        'icon': op['icon'],
+                        'asset_b': op['asset_b'],
+                        'price': op['price_ab'],
+                        'price_color': op['price_ab_color'],
+                    }
+                )
+        return return_data
+
+    def set_denomination(self, data):
+        self.denomination = data
+        self._get_pool_value(
+            self.asset_a_symbol,
+            self.asset_a_balance,
+            self.asset_b_symbol,
+            self.asset_b_balance,
+        )
+        new_data = {}
+        if self.denomination == 'BitUSD':
+            _precision = 2
+            new_data['value'] = f'{(self.usd_val_a + self.usd_val_b):.2f} USD'
+        elif self.denomination == 'BTS':
+            _precision = 5
+            new_data['value'] = f'{(self.bts_val_a + self.bts_val_b):.5f} BTS'
+        elif self.denomination == 'BitCNY':
+            _precision = 4
+            new_data['value'] = f'{(self.cny_val_a + self.cny_val_b):.4f} CNY'
+        if float(self.share_asset_balance) != 0:
+            new_data['poolshare_value'] = f'{round(float(new_data["value"].split(" ")[0]) / float(self.share_asset_balance), _precision)} {new_data["value"].split(" ")[1]}'
         else:
             new_data['poolshare_value'] = 0
-        # print(new_data['poolshare_value'])
-        pub.sendMessage('update_pool_change', data=new_data)
+        pub.sendMessage('refresh_stats_panel', data=new_data)
 
     def correct_pool_amount(self, higher_amount, lower_amount, asset):
         precision = Asset(asset).precision
@@ -173,7 +303,8 @@ class Model:
         self.ws = create_connection(self.node)
 
     def get_pools(self, data):
-        self.node = data
+        self.node = data['node']
+        self.denomination = data['denomination']
         self.bs = BitShares(
             node=self.node,
             nobroadcast=True,
@@ -199,19 +330,39 @@ class Model:
         pub.sendMessage('return_pool_list', data=data)
 
     def _get_pool_value(self, asset_a, amount_a, asset_b, amount_b):
+        # check each asset separately, first for USD, then BTS, then derive
+        # asset a
+        if asset_a == 'USD':
+            self.usd_val_a = float(amount_a)
         if asset_a == 'BTS':
-            bts_value_a = float(amount_a)
-        else:
-            temp = float(str(Market(f'{asset_a}/BTS').ticker()['latest']).split(' ')[0]) * float(amount_a)
-            bts_value_a = round(temp, 5)
+            self.bts_val_a = float(amount_a)
+        if asset_a == 'CNY':
+            self.cny_val_a = float(amount_a)
+        # derive BTS then others, validate they aren't already there
+        if self.bts_val_a == 0:
+            self.bts_val_a = round(float(str(Market(f'{asset_a}/BTS').ticker()['latest']).split(' ')[0]) * float(amount_a), 5)
+        if self.usd_val_a == 0:
+            bts_usd_val = float(str(Market('BTS/USD').ticker()['latest']).split(' ')[0])
+            self.usd_val_a = self.bts_val_a * bts_usd_val
+        if self.cny_val_a == 0:
+            bts_cny_val = float(str(Market('BTS/CNY').ticker()['latest']).split(' ')[0])
+            self.cny_val_a = self.bts_val_a * bts_cny_val
+        # asset b
+        if asset_b == 'USD':
+            self.usd_val_b = float(amount_b)
         if asset_b == 'BTS':
-            bts_value_b = float(amount_b)
-        else:
-            temp = float(str(Market(f'{asset_b}/BTS').ticker()['latest']).split(' ')[0]) * float(amount_b)
-            bts_value_b = round(temp, 5)
-        bts_usd_val = float(str(Market('BTS/USD').ticker()['latest']).split(' ')[0])
-        usd_val = (bts_value_a * bts_usd_val) + (bts_value_b * bts_usd_val)
-        return round(usd_val, 2)
+            self.bts_val_b = float(amount_b)
+        if asset_b == 'CNY':
+            self.cny_val_b = float(amount_b)
+        # derive
+        if self.bts_val_b == 0:
+            self.bts_val_b = round(float(str(Market(f'{asset_b}/BTS').ticker()['latest']).split(' ')[0]) * float(amount_b), 5)
+        if self.usd_val_b == 0:
+            bts_usd_val = float(str(Market('BTS/USD').ticker()['latest']).split(' ')[0])
+            self.usd_val_b = self.bts_val_b * bts_usd_val
+        if self.cny_val_b == 0:
+            bts_cny_val = float(str(Market('BTS/CNY').ticker()['latest']).split(' ')[0])
+            self.cny_val_b = self.bts_val_b * bts_cny_val
 
     # def _verify_active_key(self, key):
     #     """

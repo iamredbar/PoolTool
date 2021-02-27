@@ -19,6 +19,10 @@ class Controller:
         pub.subscribe(self.deposit_assets, 'deposit_assets')
         pub.subscribe(self.withdraw_assets, 'withdraw_assets')
         pub.subscribe(self.interaction_return, 'interaction_return')
+        pub.subscribe(self.set_denomination, 'set_denomination')
+        pub.subscribe(self.price_swap, 'price_swap')
+        pub.subscribe(self.refresh_history_panel, 'refresh_history_panel')
+        pub.subscribe(self.refresh_stats_panel, 'refresh_stats_panel')
 
     def pool_change(self, data):
         self.model.pool_change(data)
@@ -49,3 +53,15 @@ class Controller:
 
     def interaction_return(self, data):
         self.view.interaction_return(data)
+
+    def set_denomination(self, data):
+        self.model.set_denomination(data)
+
+    def price_swap(self):
+        self.model.price_swap()
+
+    def refresh_history_panel(self, data):
+        self.view.generate_history_panel(data)
+
+    def refresh_stats_panel(self, data):
+        self.view.generate_stats_panel(data)
