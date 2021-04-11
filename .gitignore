@@ -5,3 +5,6 @@ __pycache__/
 app/__pycache__/
 .vscode/
 app/scratch.py
+.buildozer
+buildozer.spec
+bin/
