@@ -1,99 +1,46 @@
-<img width="822" alt="Screen Shot 2020-12-06 at 3 09 29 PM" src="https://user-images.githubusercontent.com/16945982/101292483-52b3aa00-37d5-11eb-91bd-d19311883fbe.png">
+![PoolTool 2.0.0](https://user-images.githubusercontent.com/16945982/108139311-715fd800-7085-11eb-90bf-61ea19ae9fb5.png)
+___
 
-### How-to Use video here:
+ACCOUNT AND ACTIVE KEY ARE NOT PERSISTENT, YOU WILL NEED TO
+ENTER THEM EACH TIME YOU LAUNCH THE APP (but not every transaction. thats a win).
 
-[![How To Use PoolTool for Liquidity Pools on the BitShares Blockchain](http://img.youtube.com/vi/1UNUVwYSjRo/0.jpg)](http://www.youtube.com/watch?v=1UNUVwYSjRo "How To Use PoolTool for Liquidity Pools on the BitShares Blockchain")
+---
 
-# PoolTool
+## Install instructions:
+```
+git clone https://github.com/iamredbar/PoolTool
+```
 
-A simple GUI tool to help anyone use Liquidity Pools on the BitShares blockchain.
+Once downloaded, make sure to do:
 
-Written entirely in Python, it will work on any platform that can run Python.
+```
+cd PoolTool/
+chmod +x PoolTool
+pip3 install -r requirements.txt
+```
 
-中文翻译如下
+- move to the PoolTool directory
+- give the file PoolTool executable status (if it doesn't have it already)
+- install the requirements
 
-Telegram Group: https://t.me/pooltool_community_edition
+---
 
-## Installation
-Requires Python 3.8+
+## Run PoolTool with:
 
-Tested on MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS. No Windows solution currently.
+```./PoolTool```
 
-Linux install:
+in the PoolTool directory
+___
 
-```sudo apt-get install libffi-dev libssl-dev python3-dev python3-tk```
+## Using:
 
-```git clone https://github.com/iamredbar/PoolTool.git```
+You will need to enter your account and active key via the menu in the top right.
+Here you can also set a node to use if you would prefer a different node.
 
-```cd PoolTool```
+___
 
-```pip3 install -r requirements.txt```
+### Links:
 
-## Set up
+Telegram: https://t.me/pooltool_community_edition
 
-You will need to set a default node using `uptick`. Syntax is like this:
-
-```uptick set node <node_goes_here>```
-
-Example:
-
-```uptick set node 'wss://dex.iobanker.com/ws'```
-
-**If this step is not done, it is very unlikely that it will work.**
-
-(read more about `uptick` here: http://docs.uptick.rocks/en/latest/)
-
-## Start Up
-
-```python3 controller.py```
-
-## Basic Walkthrough
-
-Upon start up, you will need to select the pool you would like to use via the dropdown menu.
-
-PoolTool currently supports exchanging with liquidity pools and depositing to liquidity pools.
-
-## WIP | NEW SCREENSHOTS SOON
-
-### Please report any issues you have via Github.
-
-
-# 流动池工具
-一个便于操作的比特股区块链AMM流动池界面工具。
-Python编写，适用于能够运行Python的任意平台。
-Telegram群：https://t.me/pooltool_community_edition
-
-## 安装
-需求：Python 3.8+
-MacOS 10.14.6, Ubuntu 20.10, and 32-bit Raspberry Pi OS已测试。当前尚无Windows解决方案。
-
-```sudo apt-get install libffi-dev libssl-dev python3-dev python3-tk```
-
-```git clone https://github.com/iamredbar/PoolTool.git```
-
-```cd PoolTool```
-
-```pip3 install -r requirements.txt```
-
-## 设置
-你需要使用uptick设置一个默认的连接节点.语法如下：
-```uptick set node <node_goes_here>```
-
-例子:
-
-```uptick set node 'wss://api.bts.mobi/ws'```
-
-**如果这一步没有完成，将不能正常运行**
-
-(更多关于 uptick : http://docs.uptick.rocks/en/latest/)
-
-## 开始
-```python3 controller.py```
-
-## 基本操作
-启动后，你可以按照你的需求在面板下拉菜单上选择流动池。
-
-流动池工具当前支持流动池交易及充值。
-
-## WIP | NEW SCREENSHOTS SOON
-### Please report any issues you have via Github.
+Issues: https://github.com/iamredbar/PoolTool/issues

@@ -1,0 +1,586 @@
+<ContentCard@MDBoxLayout>:
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    size_hint: 0.85, 0.90
+    md_bg_color: app.theme_cls.bg_light
+    radius: 33,33,33,33
+    disabled: True
+
+<CustomListItem>:
+    cols: 3
+    radius: 33,33,33,33
+    padding: '10dp'
+    rows_minimum: {0:root.height/5}
+    MDLabel:
+        text: root.asset_a
+        theme_text_color: 'Primary'
+        halign: 'center'
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDIcon:
+            icon: root.icon
+            theme_text_color: 'Primary'
+            halign: 'center'
+        MDLabel:
+            text: root.price
+            theme_text_color: 'Custom'
+            text_color: root.price_color
+            halign: 'center'
+            font_style: 'Body1'
+    MDLabel
+        text: root.asset_b
+        theme_text_color: 'Primary'
+        halign: 'center'
+
+<InteractPopup>:
+    title: root.titletext
+    size_hint: (0.75, 0.5)
+    separator_color: '#669f38' # <- this is green, #e9002c is red
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            text: root.bodytext
+            theme_text_color: 'Primary'
+            halign: 'center'
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.2
+            MDFlatButton:
+                size_hint: 1, 1
+                text: 'Cancel'
+                theme_text_color: 'Secondary'
+                on_release: app._clear_popups()
+            MDRaisedButton:
+                size_hint: 1, 1
+                text: root.confirmbutton
+                md_bg_color: self.theme_cls.primary_color
+                on_release: app._confirm_interaction(self.text)
+
+<SettingsPopup>:
+    title: 'Settings'
+    size_hint: 0.75, 0.5
+    separator_color: '#669f38'
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            MDTextField:
+                id: account
+                size_hint: 1, 0.25
+                multiline: False
+                write_tab: False
+                text: root.account
+                halign: 'center'
+                helper_text: 'Account'
+                helper_text_mode: 'persistent'
+            MDTextField:
+                id: key
+                size_hint: 1, 0.25
+                multiline: False
+                write_tab: False
+                password: True
+                password_mask: '$'
+                text: root.key
+                halign: 'center'
+                helper_text: 'Key'
+                helper_text_mode: 'persistent'
+            MDTextField:
+                id: node
+                size_hint: 1, 0.25
+                multiline: False
+                write_tab: False
+                text: root.node
+                halign: 'center'
+                helper_text: 'Node'
+                helper_text_mode: 'persistent'
+            MDBoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1, 0.25
+                MDLabel:
+                    text: 'Default\nDenomination:'
+                    theme_text_color: 'Primary'
+                Spinner:
+                    id: denomination
+                    size_hint: 1, 1
+                    text: root.denomination
+                    values: ['BitUSD', 'BTS', 'BitCNY']
+        MDRaisedButton:
+            size_hint: 1, 0.3
+            text: 'Save Settings'
+            md_bg_color: self.theme_cls.primary_color
+            on_release: app.save_settings(account.text, key.text, node.text, denomination.text)
+
+<ReturnPopup>:
+    size_hint: 0.75, 0.4
+    title: root.titletext
+    separator_color: '#669f38'
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        MDLabel:
+            #size_hint: 1, 0.4
+            halign: 'center'
+            text: root.bodytext
+            theme_text_color: 'Primary'
+        MDLabel:
+            text: '(click outside this box to continue)'
+            theme_text_color: 'Secondary'
+            halign: 'center'
+
+<LoadingPoolsPopup>:
+    size_hint: 0.75, 0.4
+    title: 'Loading'
+    separator_color: '#669f38'
+    auto_dismiss: False
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        MDLabel:
+            text: 'loading pools...'
+            theme_text_color: 'Primary'
+            halign: 'center'
+        MDLabel:
+            text: '(this could take a few seconds)'
+            halign: 'center'
+            theme_text_color: 'Secondary'
+
+<LoadingPoolInfo>:
+    size_hint: 0.75, 0.4
+    title: 'Loading'
+    separator_color: '#669f38'
+    auto_dismiss: True
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        MDLabel:
+            text: root.bodytext
+            halign: 'center'
+            theme_text_color: 'Primary'
+
+MDScreen:
+    swap_card: swap_card
+    deposit_card: deposit_card
+    withdraw_card: withdraw_card
+    pool_select_spinner: pool_select_spinner
+    amount_text_field: amount_text_field
+    swap_asset_button: swap_asset_button
+    swap_estimate: swap_estimate
+    other_asset: other_asset
+    deposit_a_text_field: deposit_a_text_field
+    deposit_asset_a: deposit_asset_a
+    deposit_b_text_field: deposit_b_text_field
+    deposit_asset_b: deposit_asset_b
+    withdraw_text_field: withdraw_text_field
+    withdraw_share_asset_label: withdraw_share_asset_label
+    pool_share_balance: pool_share_balance
+    pool_share_bal_label: pool_share_bal_label
+    swap_button: swap_button
+    deposit_button: deposit_button
+    withdraw_button: withdraw_button
+    value_label: value_label
+    swap_count: swap_count
+    swap_fee: swap_fee
+    withdraw_fee: withdraw_fee
+    poolshare_value: poolshare_value
+    asset_a_balance: asset_a_balance
+    asset_b_balance: asset_b_balance
+    history_list: history_list
+    price_switch: price_switch
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        CustomToolbar:
+            id: toolbar
+            size_hint_y: None
+            height: self.theme_cls.standard_increment
+            padding: '10dp'
+            spacing: '10dp'
+            elevation: '5dp'
+            md_bg_color: app.theme_cls.primary_dark
+            MDLabel:
+                id: menu_title
+                text: 'PoolTool'
+                theme_text_color: 'Primary'
+                halign: 'center'
+                size_x: self.texture_size[0]
+                size_hint: None, None
+                font_style: 'H6'
+            Spinner:
+                id: pool_select_spinner
+                width: self.texture_size[0]
+                pos_hint: {'center_y': 0.5, 'right': 1}
+                #background_color: app.theme_cls.primary_light
+                values: []
+                on_touch_down: app.get_pools('spinner')
+                on_text: app.pool_change(self.text)
+            MDIconButton:
+                size_hint: None, None
+                icon: 'account-cog-outline'
+                on_release: app._open_settings()
+        MDBottomNavigation:
+            MDBottomNavigationItem:
+                name: 'swap'
+                text: 'Swap'
+                icon: 'swap-horizontal-variant'
+                MDFloatLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
+                    ContentCard:
+                        id: swap_card
+                        orientation: 'vertical'
+                        padding: 20
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            padding: 20
+                            md_bg_color: (0,0,0,0.2)
+                            radius: 33,33,33,33
+                            cols: 2
+                            MDTextField:
+                                id: amount_text_field
+                                required: True
+                                multiline: False
+                                halign: 'center'
+                                input_filter: 'float'
+                                theme_text_color: 'Primary'
+                                hint_text: 'Amount'
+                                helper_text: 'enter an amount to swap'
+                                helper_text_mode: 'on_focus'
+                                pos_hint: {'center_y': 0.5, 'center_x': 0.5}
+                                on_text_validate: app.update_pool_price(self.text)
+                                #on_focus: app._clear_estimate()
+                            MDRaisedButton:
+                                id: swap_asset_button
+                                pos_hint: {'center_y': 0.5}
+                                size_hint_x: 1
+                                size_hint_y: 0.66
+                                line_color: (0,0,0,0)
+                                background_color: (0,0,0,0.1)
+                                on_release: app._interchange_assets_swap()
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            MDIcon:
+                                icon: 'arrow-up'
+                                halign: 'center'
+                                theme_text_color: 'Primary'
+                            MDLabel:
+                                text: 'swap for'
+                                theme_text_color: 'Primary'
+                                halign: 'center'
+                            MDIcon:
+                                icon: 'arrow-down'
+                                halign: 'center'
+                                theme_text_color: 'Primary'
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            padding: 10
+                            md_bg_color: (0,0,0,0.2)
+                            radius: 33,33,33,33
+                            MDLabel:
+                                id: swap_estimate
+                                halign: 'center'
+                                size: self.texture_size[0], self.texture_size[1]
+                                theme_text_color: 'Primary'
+                            MDLabel:
+                                id: other_asset
+                                halign: 'center'
+                                size: self.texture_size[0], self.texture_size[1]
+                                theme_text_color: 'Primary'
+                        MDFloatLayout:
+                            size_hint: 1,1
+                            MDRoundFlatButton:
+                                id: swap_button
+                                disabled: True
+                                text: 'SWAP'
+                                size_hint: 0.85, 0.7
+                                font_size: 30
+                                md_bg_color: app.theme_cls.primary_dark
+                                theme_text_color: 'Primary'
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                on_release: app.interact(self.text)
+            MDBottomNavigationItem:
+                name: 'deposit'
+                text: 'Deposit'
+                icon: 'arrow-down'
+                MDFloatLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
+                    ContentCard:
+                        id: deposit_card
+                        orientation: 'vertical'
+                        padding: 20
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            padding: 10
+                            md_bg_color: (0,0,0,0.2)
+                            radius: 33,33,33,33
+                            cols: 2
+                            MDTextField:
+                                id: deposit_a_text_field
+                                required: True
+                                multiline: False
+                                write_tab: False
+                                halign: 'center'
+                                input_filter: 'float'
+                                theme_text_color: 'Primary'
+                                hint_text: 'Amount'
+                                helper_text: 'enter an amount to deposit'
+                                helper_text_mode: 'on_focus'
+                                pos_hint: {'center_y': 0.5}
+                            MDLabel:
+                                id: deposit_asset_a
+                                halign: 'center'
+                                theme_text_color: 'Primary'
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            MDIcon:
+                                icon: 'arrow-down'
+                                halign: 'center'
+                                theme_text_color: 'Primary'
+                            MDLabel:
+                                text: 'deposit'
+                                theme_text_color: 'Primary'
+                                halign: 'center'
+                            MDIcon:
+                                icon: 'arrow-down'
+                                halign: 'center'
+                                theme_text_color: 'Primary'
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            padding: 10
+                            md_bg_color: (0,0,0,0.2)
+                            radius: 33,33,33,33
+                            cols: 2
+                            MDTextField:
+                                id: deposit_b_text_field
+                                required: True
+                                multiline: False
+                                write_tab: False
+                                halign: 'center'
+                                input_filter: 'float'
+                                theme_text_color: 'Primary'
+                                hint_text: 'Amount'
+                                helper_text: 'enter an amount to deposit'
+                                helper_text_mode: 'on_focus'
+                                pos_hint: {'center_y': 0.5}
+                            MDLabel:
+                                id: deposit_asset_b
+                                halign: 'center'
+                                theme_text_color: 'Primary'
+                        MDFloatLayout:
+                            size_hint: 1,1
+                            MDRoundFlatButton:
+                                id: deposit_button
+                                text: 'DEPOSIT'
+                                size_hint: 0.85, 0.7
+                                font_size: 30
+                                md_bg_color: app.theme_cls.primary_dark
+                                theme_text_color: 'Primary'
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                on_release: app.interact(self.text)
+            MDBottomNavigationItem:
+                name: 'withdraw'
+                text: 'Withdraw'
+                icon: 'arrow-up'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDFloatLayout:
+                        size_hint: 1, 1
+                        ContentCard:
+                            id: withdraw_card
+                            orientation: 'vertical'
+                            padding: 20
+                            MDBoxLayout:
+                                orientation: 'horizontal'
+                                padding: 10
+                                md_bg_color: (0,0,0,0.2)
+                                radius: 33,33,33,33
+                                cols: 2
+                                MDTextField:
+                                    id: withdraw_text_field
+                                    required: True
+                                    multiline: False
+                                    halign: 'center'
+                                    input_filter: 'float'
+                                    theme_text_color: 'Primary'
+                                    hint_text: 'Amount'
+                                    helper_text: 'enter an amount to withdraw'
+                                    helper_text_mode: 'on_focus'
+                                    pos_hint: {'center_y': 0.5}
+                                MDLabel:
+                                    id: withdraw_share_asset_label
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                            MDBoxLayout:
+                                orientation: 'horizontal'
+                                size_hint_y: None
+                                MDIcon:
+                                    icon: 'arrow-up'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                MDLabel:
+                                    text: 'withdraw'
+                                    theme_text_color: 'Primary'
+                                    halign: 'center'
+                                MDIcon:
+                                    icon: 'arrow-up'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                padding: 10
+                                md_bg_color: (0,0,0,0.2)
+                                radius: 33,33,33,33
+                                MDLabel:
+                                    text: 'Outstanding Pool Shares'
+                                    halign: 'center'
+                                    theme_text_color: 'Secondary'
+                                MDSeparator:
+                                MDBoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: 10
+                                    MDLabel:
+                                        id: pool_share_balance
+                                        halign: 'center'
+                                        theme_text_color: 'Secondary'
+                                    MDLabel:
+                                        id: pool_share_bal_label
+                                        halign: 'center'
+                                        theme_text_color: 'Secondary'
+                            MDFloatLayout:
+                                size_hint: 1,1
+                                MDRoundFlatButton:
+                                    id: withdraw_button
+                                    text: 'WITHDRAW'
+                                    size_hint: 0.85, 0.7
+                                    font_size: 30
+                                    md_bg_color: app.theme_cls.primary_dark
+                                    theme_text_color: 'Primary'
+                                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                    on_release: app.interact(self.text)
+            MDBottomNavigationItem:
+                name: 'stats'
+                text: 'Stats'
+                icon: 'information-outline'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDFloatLayout:
+                        size_hint: 1, 1
+                        ContentCard:
+                            id: info_card
+                            orientation: 'vertical'
+                            padding: 10, 10
+                            MDLabel:
+                                halign: 'center'
+                                text: 'Stats'
+                                font_style: 'H4'
+                                theme_text_color: 'Primary'
+                                size_hint: 1, 0.1
+                            MDSeparator:
+                            MDGridLayout:
+                                cols: 2
+                                MDLabel:
+                                    text: 'Pool Valuation\n(approx.):'
+                                    halign: 'center'
+                                MDLabel:
+                                    id: value_label
+                                    text: '-' # '12345.54321 BTS'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                MDSeparator:
+                                MDSeparator:
+                                MDLabel:
+                                    text: 'Swaps\n(Last 24hrs):'
+                                    halign: 'center'
+                                MDLabel:
+                                    id: swap_count
+                                    text: '-' # ''31'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                MDSeparator:
+                                MDSeparator:
+                                MDLabel:
+                                    text: 'Swap Fee:'
+                                    halign: 'center'
+                                MDLabel:
+                                    id: swap_fee
+                                    text: '-' # ''0.5%'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                MDSeparator:
+                                MDSeparator:
+                                MDLabel:
+                                    text: 'Withdraw Fee:'
+                                    halign: 'center'
+                                MDLabel:
+                                    id: withdraw_fee
+                                    text: '-' # ''1.0%'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                MDSeparator:
+                                MDSeparator:
+                                MDLabel:
+                                    text: 'Poolshare\nValuation:'
+                                    halign: 'center'
+                                MDLabel:
+                                    id: poolshare_value
+                                    text: '-' # ''1.0%'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                MDSeparator:
+                                MDSeparator:
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                size_hint: 1, 0.2
+                                MDLabel:
+                                    text: 'Balances'
+                                    halign: 'center'
+                                    theme_text_color: 'Primary'
+                                    font_style: 'H5'
+                                MDBoxLayout:
+                                    orientation: 'horizontal'
+                                    md_bg_color: app.theme_cls.bg_dark
+                                    radius: 33,33,33,33
+                                    MDLabel:
+                                        id: asset_a_balance
+                                        text: 'asset_a balance'
+                                        halign: 'center'
+                                        theme_text_color: 'Primary'
+                                    MDLabel:
+                                        id: asset_b_balance
+                                        text: 'asset_b balance'
+                                        halign: 'center'
+                                        theme_text_color: 'Primary'
+            MDBottomNavigationItem:
+                name: 'history'
+                text: 'History'
+                icon: 'database'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    size_hint: 0.85, 0.90
+                    md_bg_color: app.theme_cls.bg_light
+                    radius: 33,33,33,33
+                    padding: 10, 10, 10, 10
+                    MDBoxLayout:
+                        size_hint: 1, 0.12
+                        orientation: 'horizontal'
+                        MDLabel:
+                            text: 'Swap History'
+                            halign: 'center'
+                            font_style: 'H4'
+                            theme_text_color: 'Primary'
+                        MDIconButton:
+                            id: price_switch
+                            icon: 'swap-horizontal-variant'
+                            halign: 'center'
+                            theme_text_color: 'Custom'
+                            text_color: app.theme_cls.primary_color
+                            on_release: app.price_swap(sender='price_switch')
+                    MDSeparator:
+                    ScrollView:
+                        MDList:
+                            id: history_list
+                            padding: 10

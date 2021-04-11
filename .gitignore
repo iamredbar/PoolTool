@@ -1,8 +1,10 @@
-
+venv/
+.idea/
 .DS_Store
-__pycache__/model.cpython-38.pyc
-__pycache__/view.cpython-38.pyc
-__pycache__/depthchart.cpython-38.pyc
-__pycache__/pool.cpython-38.pyc
-.vscode/settings.json
-__pycache__/view.cpython-37.pyc
+__pycache__/
+app/__pycache__/
+.vscode/
+app/scratch.py
+.buildozer
+buildozer.spec
+bin/
