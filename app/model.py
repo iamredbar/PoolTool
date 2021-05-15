@@ -10,6 +10,8 @@ from pprint import pprint
 import json
 from websocket import create_connection
 
+POOL_ID_LIMIT = 200
+
 
 class Model:
     BLOCK_HOUR = 1200
@@ -312,21 +314,30 @@ class Model:
         )
         set_shared_blockchain_instance(self.bs)
         self._set_ws_connection()
-        payload1 = {
-            "id": 1,
-            "method": "call",
-            "params": [
-                "database",
-                "list_liquidity_pools",
-                []
-            ]
-        }
-        self.ws.send(json.dumps(payload1))
-        result1 = self.ws.recv()
-        r = json.loads(result1)
+        _counter = 0
         data = []
-        for i in r['result']:
-            data.append(f'{Asset(self.bs.rpc.get_object(i["id"])["share_asset"]).symbol} {i["id"]}')
+        while _counter < POOL_ID_LIMIT:
+            payload_string = "1.19." + str(_counter)
+            payload1 = {
+                "id": 1,
+                "method": "call",
+                "params": [
+                    "database",
+                    "list_liquidity_pools",
+                    [
+                        100,
+                        payload_string,
+                        False
+                    ]
+                ]
+            }
+            self.ws.send(json.dumps(payload1))
+            result1 = self.ws.recv()
+            r = json.loads(result1)
+            print(r)
+            for i in r['result']:
+                data.append(f'{Asset(self.bs.rpc.get_object(i["id"])["share_asset"]).symbol} {i["id"]}')
+            _counter += 100
         pub.sendMessage('return_pool_list', data=data)
 
     def _get_pool_value(self, asset_a, amount_a, asset_b, amount_b):
