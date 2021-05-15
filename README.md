@@ -2,40 +2,63 @@
 ___
 
 ACCOUNT AND ACTIVE KEY ARE NOT PERSISTENT, YOU WILL NEED TO
-ENTER THEM EACH TIME YOU LAUNCH THE APP (but not every transaction. thats a win).
+ENTER THEM EACH TIME YOU LAUNCH THE APP (but not every transaction. that's a win).
+
+If / when Beet receives an update,
+Beet will be used. More info about Beet here:
+[Beet GitHub Page](https://github.com/bitshares/beet)
 
 ---
 
-## Install instructions:
-```
+## First Time Setup Instructions:
+Download software from GitHub:
+```shell
 git clone https://github.com/iamredbar/PoolTool
 ```
 
-Once downloaded, make sure to do:
+Once downloaded, make sure to change to that directory:
 
-```
+```shell
 cd PoolTool/
-chmod +x PoolTool
+```
+
+Before installing the requirements make sure to create a virtual environment.
+in this case, we are creating an environment named `env`:
+
+```shell
+python3 -m venv env
+```
+
+Activate the newly created environment and install the requirements:
+
+```shell
+source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
-- move to the PoolTool directory
-- give the file PoolTool executable status (if it doesn't have it already)
-- install the requirements
-
 ---
 
-## Run PoolTool with:
+## Running PoolTool after First Time Setup is complete:
 
-```./PoolTool```
+Make sure you have your environment active (if it's not already):
 
-in the PoolTool directory
+```shell
+source env/bin/activate
+```
+
+Run PoolTool:
+
+```shell
+./PoolTool
+```
+
 ___
 
 ## Using:
 
 You will need to enter your account and active key via the menu in the top right.
-Here you can also set a node to use if you would prefer a different node.
+Here you can also set a node to use if you would prefer a different node
+than the default one (wss://api.iamredbar.com/ws).
 
 ___
 
