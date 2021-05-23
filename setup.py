@@ -7,19 +7,19 @@ README = (HERE / "README.md").read_text()
 
 if platform.system() == 'Windows':
     I_R = [
-        'kivy[full,sdl2,glew]',
-        'kivymd',
+        'cython==0.29.22',
         'bitshares',
         'pypubsub',
-        'cython'
+        'kivy[full,sdl2,glew]',
+        'kivymd'
     ]
 else:
     I_R = [
-        'kivy',
-        'kivymd',
+        'cython',
         'bitshares',
         'pypubsub',
-        'cython'
+        'kivy',
+        'kivymd'
     ]
 
 setup(
