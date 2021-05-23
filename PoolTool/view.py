@@ -60,10 +60,10 @@ class PoolTool(MDApp):
     """
 
     def __init__(self, **kwargs):
-        self.icon = 'assets/icon.jpg'
+        self.icon = 'PoolTool/assets/icon.jpg'
         super().__init__(**kwargs)
         self.view_pools = []
-        self.screen = Builder.load_file('app/layout.kv')
+        self.screen = Builder.load_file('PoolTool/layout.kv')
         self.pool_dropdown = []
         self.interact_popup = None
         self.interact_data = None
@@ -205,7 +205,14 @@ class PoolTool(MDApp):
         self.generate_history_panel(data['history'])
 
     def generate_history_panel(self, history):
-        self.screen.history_list.clear_widgets()
+        # print(self.screen.history_list.children)
+        # self.screen.history_list.clear_widgets()
+        # try:
+        #     for child in self.screen.history_list.children:
+        #         print(child)
+        #         self.screen.history_list.remove_widget(child)
+        # except:
+        #     print('no children')
         for op in history:
             self.screen.history_list.add_widget(
                 CustomListItem(
@@ -216,6 +223,7 @@ class PoolTool(MDApp):
                     asset_b=op['asset_b'],
                 )
             )
+        # print(self.screen.history_list.children)
 
     def generate_stats_panel(self, data):
         self.screen.value_label.text = f'{data["value"]}'

@@ -1,5 +1,5 @@
-from app.view import PoolTool
-from app.model import Model
+from PoolTool.view import PoolTool
+from PoolTool.model import Model
 from pubsub import pub
 
 
@@ -65,3 +65,8 @@ class Controller:
 
     def refresh_stats_panel(self, data):
         self.view.generate_stats_panel(data)
+
+
+def main():
+    c = Controller()
+    c.view.run()
