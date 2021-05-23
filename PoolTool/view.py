@@ -17,8 +17,8 @@ Window.size = (400, 650)
 
 # Fix bug where Windows does not see OpenGL 2.0
 if platform.system() == 'Windows':
-    import os
-    os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
+    from kivy import Config
+    Config.set('graphics', 'multisamples', '0')
 
 
 class CustomToolbar(ThemableBehavior, RectangularElevationBehavior, MDBoxLayout):
