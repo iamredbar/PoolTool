@@ -10,7 +10,7 @@ if platform.system() == 'Windows':
         'cython==0.29.22',
         'bitshares',
         'pypubsub',
-        'kivy[base,angle,sdl2]',
+        'kivy[base,angle,sdl2]==2.0.0',
         'kivymd'
     ]
 else:
