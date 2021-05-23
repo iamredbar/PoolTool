@@ -1,5 +1,4 @@
-import pathlib
-import platform
+import pathlib, platform
 from setuptools import find_packages, setup
 
 
@@ -11,19 +10,21 @@ if platform.system() == 'Windows':
         'kivy[full,sdl2,glew]',
         'kivymd',
         'bitshares',
-        'pypubsub'
+        'pypubsub',
+        'cython'
     ]
 else:
     I_R = [
         'kivy',
         'kivymd',
         'bitshares',
-        'pypubsub'
+        'pypubsub',
+        'cython'
     ]
 
 setup(
     name='PoolTool',
-    version='2.0.6',
+    version='2.0.7',
     description='A simple Python tool to help anyone use Liquidity Pools on the BitShares blockchain.',
     long_description=README,
     long_description_content_type='text/markdown',

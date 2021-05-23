@@ -11,19 +11,9 @@ Beet will be used. More info about Beet here:
 ---
 
 ## First Time Setup Instructions:
-Download software from GitHub:
-```shell
-git clone https://github.com/iamredbar/PoolTool
-```
-
-Once downloaded, make sure to change to that directory:
-
-```shell
-cd PoolTool/
-```
-
-Before installing the requirements make sure to create a virtual environment.
-in this case, we are creating an environment named `env`:
+### Environment Setup
+Before doing anything else, make sure to create a virtual environment.
+In this case, we are creating an environment named `env`:
 
 ```shell
 python3 -m venv env
@@ -33,7 +23,19 @@ Activate the newly created environment and install the requirements:
 
 ```shell
 source env/bin/activate
-pip3 install -r requirements.txt
+```
+
+### Installation
+Method 1: Use `pip` to download and install from PyPI:
+```shell
+python3 -m pip install PoolTool
+```
+
+Method 2: Download and install from source
+```shell
+git clone https://github.com/iamredbar/PoolTool
+cd PoolTool/
+python3 -m pip install .
 ```
 
 ---
@@ -49,7 +51,7 @@ source env/bin/activate
 Run PoolTool:
 
 ```shell
-./PoolTool
+PoolTool
 ```
 
 ___
