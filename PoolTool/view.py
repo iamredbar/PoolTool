@@ -1,3 +1,4 @@
+import platform
 from kivymd.app import MDApp
 from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import RectangularElevationBehavior
@@ -13,6 +14,11 @@ from kivy.config import Config
 from pubsub import pub
 
 Window.size = (400, 650)
+
+# Fix bug where Windows does not see OpenGL 2.0
+if platform.system() == 'Windows':
+    import os
+    os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 
 
 class CustomToolbar(ThemableBehavior, RectangularElevationBehavior, MDBoxLayout):
