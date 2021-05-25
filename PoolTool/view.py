@@ -1,19 +1,24 @@
+import platform
 from kivymd.app import MDApp
 from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import RectangularElevationBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
-from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.properties import StringProperty, ColorProperty
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.config import Config
 from pubsub import pub
 
 Window.size = (400, 650)
 
+# Fix bug where Windows does not see OpenGL 2.0
+if platform.system() == 'Windows':
+    from kivy import Config
+    import os
+    Config.set('graphics', 'multisamples', '0')
+    os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 
 class CustomToolbar(ThemableBehavior, RectangularElevationBehavior, MDBoxLayout):
     pass
@@ -60,10 +65,10 @@ class PoolTool(MDApp):
     """
 
     def __init__(self, **kwargs):
-        self.icon = 'assets/icon.jpg'
+        self.icon = 'PoolTool/assets/icon.jpg'
         super().__init__(**kwargs)
         self.view_pools = []
-        self.screen = Builder.load_file('app/layout.kv')
+        self.screen = Builder.load_file('PoolTool/layout.kv')
         self.pool_dropdown = []
         self.interact_popup = None
         self.interact_data = None
@@ -205,7 +210,14 @@ class PoolTool(MDApp):
         self.generate_history_panel(data['history'])
 
     def generate_history_panel(self, history):
-        self.screen.history_list.clear_widgets()
+        # print(self.screen.history_list.children)
+        # self.screen.history_list.clear_widgets()
+        # try:
+        #     for child in self.screen.history_list.children:
+        #         print(child)
+        #         self.screen.history_list.remove_widget(child)
+        # except:
+        #     print('no children')
         for op in history:
             self.screen.history_list.add_widget(
                 CustomListItem(
@@ -216,6 +228,7 @@ class PoolTool(MDApp):
                     asset_b=op['asset_b'],
                 )
             )
+        # print(self.screen.history_list.children)
 
     def generate_stats_panel(self, data):
         self.screen.value_label.text = f'{data["value"]}'

@@ -1,6 +1,0 @@
-bitshares==0.7.0
-graphenelib
-pypubsub
-kivy
-kivymd
-websocket_client

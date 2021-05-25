@@ -334,7 +334,7 @@ class Model:
             self.ws.send(json.dumps(payload1))
             result1 = self.ws.recv()
             r = json.loads(result1)
-            print(r)
+            # print(r)
             for i in r['result']:
                 data.append(f'{Asset(self.bs.rpc.get_object(i["id"])["share_asset"]).symbol} {i["id"]}')
             _counter += 100
