@@ -4,13 +4,11 @@ from kivymd.theming import ThemableBehavior
 from kivymd.uix.behaviors import RectangularElevationBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
-from kivy.uix.label import Label
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.properties import StringProperty, ColorProperty
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.config import Config
 from pubsub import pub
 
 Window.size = (400, 650)

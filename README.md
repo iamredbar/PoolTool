@@ -19,7 +19,7 @@ In this case, we are creating an environment named `env`:
 python3 -m venv env
 ```
 
-Activate the newly created environment and install the requirements:
+Activate the newly created environment:
 
 ```shell
 source env/bin/activate
@@ -31,7 +31,7 @@ Method 1: Use `pip` to download and install from PyPI:
 python3 -m pip install PoolTool
 ```
 
-Method 2: Download and install from source
+Method 2: Download and install from source:
 ```shell
 git clone https://github.com/iamredbar/PoolTool
 cd PoolTool/
@@ -40,7 +40,7 @@ python3 -m pip install .
 
 ---
 
-## Running PoolTool after First Time Setup is complete:
+## Running PoolTool after First Time Setup is complete
 
 Make sure you have your environment active (if it's not already):
 

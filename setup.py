@@ -24,7 +24,7 @@ else:
 
 setup(
     name='PoolTool',
-    version='2.0.7',
+    version='2.1.0',
     description='A simple Python tool to help anyone use Liquidity Pools on the BitShares blockchain.',
     long_description=README,
     long_description_content_type='text/markdown',
